@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>做饭 - 四时</title>
+    <style>
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('../assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        html, body, * {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
+        
+        :root {
+            --primary-red: #60281E;
+            --secondary-gold: #DAA520;
+            --accent-jade: #478778;
+            --warm-beige: #F5F5DC;
+            --ink-black: #2C2C2C;
+            --paper-white: #FEFEFE;
+            --border-gray: #D3D3D3;
+            --shadow-dark: rgba(44, 44, 44, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-white) 100%);
+            color: var(--ink-black);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 2rem;
+            left: 2rem;
+            padding: 0.8rem 1.5rem;
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-jade);
+        }
+
+        .back-button:hover {
+            background: transparent;
+            color: var(--accent-jade);
+            transform: translateY(-2px);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .qingtuan-icon {
+            background: url('../assets/1.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .qingtuan-icon::after {
+            content: none !important;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-dark);
+        }
+
+        .main-question {
+            font-size: 2rem;
+            color: var(--ink-black);
+            margin-bottom: 3rem;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .option-button {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-button::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(71, 135, 120, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .option-button:hover::before {
+            opacity: 1;
+            animation: shimmer 0.6s ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .option-button:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent-jade);
+            box-shadow: 6px 6px 20px var(--shadow-dark);
+        }
+
+        .option-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .option-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            margin-bottom: 0.8rem;
+        }
+
+        .option-description {
+            font-size: 1rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .location-info {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .main-question {
+                font-size: 1.5rem;
+            }
+            
+            .back-button, .location-info {
+                position: relative;
+                top: auto;
+                left: auto;
+                right: auto;
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="../index.html" class="back-button">← 返回首页</a>
+    <div class="location-info" id="locationInfo">挪威</div>
+
+    <div class="container">
+        <div class="header">
+            <div class="qingtuan-icon"></div>
+            <h1 class="page-title">做饭</h1>
+        </div>
+
+        <div class="main-question">今天做了什么？</div>
+
+        <div class="options-container">
+            <div class="option-button" onclick="selectOption('recipes')">
+                <div class="option-icon" style="background: url('../assets/1-1.png') no-repeat center center / contain; width: 120px; height: 120px; margin: 0 auto 1rem;"></div>
+                <div class="option-title">根据已有的菜谱做饭</div>
+                <div class="option-description">浏览精选的中式菜谱，按步骤学习传统美食制作</div>
+            </div>
+
+            <div class="option-button" onclick="selectOption('ai-suggest')">
+                <div class="option-icon" style="background: url('../assets/1-2.png') no-repeat center center / contain; width: 120px; height: 120px; margin: 0 auto 1rem;"></div>
+                <div class="option-title">让AI帮我决定</div>
+                <div class="option-description">告诉AI你现有的食材，让它为你推荐合适的菜品</div>
+            </div>
+
+            <div class="option-button" onclick="selectOption('hometown-flavor')">
+                <div class="option-icon" style="background: url('../assets/1-3.png') no-repeat center center / contain; width: 120px; height: 120px; margin: 0 auto 1rem;"></div>
+                <div class="option-title">回顾一下家乡的味道</div>
+                <div class="option-description">重温经典家常菜，找回记忆中的温暖味道</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时显示用户位置
+        window.addEventListener('load', function() {
+            const savedLocation = localStorage.getItem('userLocation');
+            const locationInfo = document.getElementById('locationInfo');
+            
+            if (savedLocation) {
+                const locationNames = {
+                    'norway': '挪威',
+                    'sweden': '瑞典',
+                    'denmark': '丹麦',
+                    'finland': '芬兰',
+                    'iceland': '冰岛',
+                    'germany': '德国',
+                    'netherlands': '荷兰',
+                    'france': '法国',
+                    'uk': '英国',
+                    'other': '欧洲'
+                };
+                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            }
+        });
+
+        function selectOption(option) {
+            const savedLocation = localStorage.getItem('userLocation');
+            
+            switch(option) {
+                case 'recipes':
+                    window.location.href = 'recipes-select.html';
+                    break;
+                case 'ai-suggest':
+                    window.location.href = 'ai-fortune.html';
+                    break;
+                case 'hometown-flavor':
+                    window.location.href = 'hometown.html';
+                    break;
+                default:
+                    console.log('未知选项:', option);
+            }
+        }
+    </script>
+</body>
+</html>

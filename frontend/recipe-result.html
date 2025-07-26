@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>菜谱推荐 - 四时</title>
+    <style>
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('../assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        html, body, * {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
+        
+        :root {
+            --primary-red: #60281E;
+            --secondary-gold: #DAA520;
+            --accent-jade: #478778;
+            --warm-beige: #F5F5DC;
+            --ink-black: #2C2C2C;
+            --paper-white: #FEFEFE;
+            --border-gray: #D3D3D3;
+            --shadow-dark: rgba(44, 44, 44, 0.2);
+            --light-jade: rgba(71, 135, 120, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-white) 100%);
+            color: var(--ink-black);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-jade);
+        }
+
+        .back-button:hover {
+            background: transparent;
+            color: var(--accent-jade);
+            transform: translateY(-2px);
+        }
+
+        .location-info {
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .qingtuan-icon {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 2rem;
+            background: url('../assets/1.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .qingtuan-icon::after {
+            content: none !important;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-dark);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        .filter-summary {
+            background: var(--light-jade);
+            border-radius: 12px;
+            padding: 1.2rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .filter-tag {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-tag-icon {
+            font-size: 1.2rem;
+        }
+
+        .recipe-section {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .recipe-image {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .recipe-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .recipe-info {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .recipe-info-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .recipe-info-icon {
+            font-size: 1.5rem;
+            color: var(--accent-jade);
+        }
+
+        .recipe-info-label {
+            font-size: 0.9rem;
+            color: var(--ink-black);
+        }
+
+        .recipe-section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--secondary-gold);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-gray);
+        }
+
+        .ingredients-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .ingredient-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+
+        .ingredient-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--secondary-gold);
+            border-radius: 50%;
+        }
+
+        .ingredient-text {
+            font-size: 1rem;
+        }
+
+        .steps-list {
+            counter-reset: step-counter;
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .step-item {
+            position: relative;
+            margin-bottom: 1.5rem;
+            padding-left: 3.5rem;
+            min-height: 3rem;
+        }
+
+        .step-item::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 2.5rem;
+            height: 2.5rem;
+            background-color: var(--accent-jade);
+            color: var(--paper-white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .step-text {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .tips-list {
+            background: var(--warm-beige);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .tip-item {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.8rem;
+            align-items: baseline;
+        }
+
+        .tip-icon {
+            color: var(--primary-red);
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .tip-text {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .more-recipes {
+            text-align: center;
+            margin-top: 3rem;
+        }
+
+        .more-button {
+            background: var(--primary-red);
+            color: var(--paper-white);
+            border: none;
+            border-radius: 12px;
+            padding: 1.2rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .more-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 6px 6px 16px var(--shadow-dark);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .recipe-title {
+                font-size: 1.8rem;
+            }
+            
+            .recipe-info {
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="recipes-select.html" class="back-button">← 返回筛选页面</a>
+            <div class="location-info" id="locationInfo">挪威</div>
+        </div>
+
+        <div class="title-section">
+            <div class="qingtuan-icon"></div>
+            <h1 class="page-title">菜谱推荐</h1>
+            <p class="page-subtitle">根据您的筛选条件，为您推荐以下菜谱</p>
+        </div>
+
+        <div class="filter-summary" id="filterSummary">
+            <!-- 将由JavaScript填充 -->
+        </div>
+
+        <!-- 菜谱1：蒜蓉炒包菜 -->
+        <div class="recipe-section">
+            <img src="https://i.ytimg.com/vi/nXnhRRd66eQ/sddefault.jpg" alt="蒜蓉炒包菜" class="recipe-image">
+            <h2 class="recipe-title">蒜蓉炒包菜</h2>
+            
+            <div class="recipe-info">
+                <div class="recipe-info-item">
+                    <div class="recipe-info-icon">🕒</div>
+                    <div class="recipe-info-label">20分钟</div>
+                </div>
+                <div class="recipe-info-item">
+                    <div class="recipe-info-icon">🍱</div>
+                    <div class="recipe-info-label">适合打包</div>
+                </div>
+                <div class="recipe-info-item">
+                    <div class="recipe-info-icon">🔥</div>
+                    <div class="recipe-info-label">适合电磁炉</div>
+                </div>
+                <div class="recipe-info-item">
+                    <div class="recipe-info-icon">🥄</div>
+                    <div class="recipe-info-label">简单</div>
+                </div>
+            </div>
+            
+            <h3 class="recipe-section-title">食材准备</h3>
+            <div class="ingredients-list">
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">包菜 1/2个</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">大蒜 6-8瓣</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">干辣椒 2-3个（可选）</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">食用油 2汤匙</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">盐 1/2茶匙</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">鸡精 1/4茶匙（可选）</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">白胡椒粉 少许</div>
+                </div>
+            </div>
+            
+            <h3 class="recipe-section-title">制作步骤</h3>
+            <ol class="steps-list">
+                <li class="step-item">
+                    <div class="step-text">将包菜洗净，切成小块或手撕成小片，大蒜拍扁后切碎</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-text">电磁炉开中高火，锅中倒入食用油加热</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-text">油热后放入蒜末和干辣椒（如使用），爆香约30秒</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-text">倒入包菜，快速翻炒2-3分钟至包菜变软但保持脆度</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-text">加入盐、鸡精和白胡椒粉调味，继续翻炒约1分钟均匀入味</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-text">包菜变软但仍有脆度时即可出锅</div>
+                </li>
+            </ol>
+            
+            <h3 class="recipe-section-title">小贴士</h3>
+            <div class="tips-list">
+                <div class="tip-item">
+                    <div class="tip-icon">💡</div>
+                    <div class="tip-text">包菜切好后可以稍微用手揉搓，加入少许盐腌制5分钟，这样炒出来的包菜会更脆嫩</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon">💡</div>
+                    <div class="tip-text">电磁炉炒菜需要注意火候，中高火最适合炒包菜，避免温度过高导致糊锅</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon">💡</div>
+                    <div class="tip-text">包菜不要炒太久，保持一定脆度口感更佳</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon">💡</div>
+                    <div class="tip-text">打包时，可以晾凉再装盒，这样不会有太多水汽影响口感</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 菜谱2：排骨炖白萝卜 -->
+        <div class="recipe-section">
+            <img src="https://redhousespice.com/wp-content/uploads/2024/09/pork-rib-soup-with-corn-carrot-5-scaled.jpg" alt="排骨炖白萝卜" class="recipe-image">
+            <h2 class="recipe-title">排骨炖白萝卜</h2>
+            
+            <div class="recipe-info">
+                <div class="recipe-info-item">
+                    <div class="recipe-info-icon">🕒</div>
+                    <div class="recipe-info-label">1小时30分钟</div>
+                </div>
+                <div class="recipe-info-item">
+                    <div class="recipe-info-icon">🍱</div>
+                    <div class="recipe-info-label">不适合打包</div>
+                </div>
+                <div class="recipe-info-item">
+                    <div class="recipe-info-icon">🔥</div>
+                    <div class="recipe-info-label">适合电磁炉</div>
+                </div>
+                <div class="recipe-info-item">
+                    <div class="recipe-info-icon">🥄</div>
+                    <div class="recipe-info-label">中等</div>
+                </div>
+            </div>
+            
+            <h3 class="recipe-section-title">食材准备</h3>
+            <div class="ingredients-list">
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">猪排骨 500克</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">白萝卜 1个（约400克）</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">姜片 5-6片</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">葱段 3-4段</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">料酒 2汤匙</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">盐 适量</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">清水 1500ml</div>
+                </div>
+                <div class="ingredient-item">
+                    <div class="ingredient-dot"></div>
+                    <div class="ingredient-text">香菜（点缀用） 少许</div>
+                </div>
+            </div>
+            
+            <h3 class="recipe-section-title">制作步骤</h3>
+            <ol class="steps-list">
+                <li class="step-item">
+                    <div class="step-text">排骨洗净，放入冷水中浸泡30分钟，去除血水</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-text">将排骨放入锅中，加入足够的冷水，大火煮开</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-text">煮沸后，撇去浮沫，捞出排骨并冲洗干净</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-text">电磁炉锅中加入1500ml清水，放入洗净的排骨、姜片和葱段</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-text">加入料酒，用中火煮40分钟至排骨软烂</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-text">白萝卜去皮切成块，加入锅中，继续炖20分钟</div>
+                </li>
+                <li class="step-item">
+                    <div class="step-text">加入适量盐调味，撒上香菜点缀即可</div>
+                </li>
+            </ol>
+            
+            <h3 class="recipe-section-title">小贴士</h3>
+            <div class="tips-list">
+                <div class="tip-item">
+                    <div class="tip-icon">💡</div>
+                    <div class="tip-text">排骨一定要焯水，这样炖出来的汤才会清澈</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon">💡</div>
+                    <div class="tip-text">电磁炉炖汤时可以先用高火煮开，再转中小火慢炖，更省电且汤味更浓</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon">💡</div>
+                    <div class="tip-text">萝卜不要切太小，否则炖太久会糊烂</div>
+                </div>
+                <div class="tip-item">
+                    <div class="tip-icon">💡</div>
+                    <div class="tip-text">盐要在最后加，这样排骨会更入味，汤也更鲜美</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="more-recipes">
+            <button class="more-button" onclick="window.location.href='recipes-select.html'">重新筛选菜谱</button>
+        </div>
+    </div>
+
+    <script src="api-utils.js"></script>
+    <script>
+        // 页面加载时显示用户位置和筛选条件
+        window.addEventListener('load', async function() {
+            // 显示用户位置
+            const savedLocation = await api.getUserLocation();
+            const locationInfo = document.getElementById('locationInfo');
+            
+            if (savedLocation) {
+                const locationNames = {
+                    'norway': '挪威',
+                    'sweden': '瑞典',
+                    'denmark': '丹麦',
+                    'finland': '芬兰',
+                    'iceland': '冰岛',
+                    'germany': '德国',
+                    'netherlands': '荷兰',
+                    'france': '法国',
+                    'uk': '英国',
+                    'other': '欧洲'
+                };
+                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            }
+
+            // 显示筛选条件
+            const filterSummary = document.getElementById('filterSummary');
+            const savedFilters = await api.getRecipeFilters();
+            
+            if (savedFilters && Object.keys(savedFilters).length > 0) {
+                let timeText = '';
+                switch(savedFilters.cooking_time) {
+                    case 1:
+                        timeText = '小于30分钟';
+                        break;
+                    case 2:
+                        timeText = '小于1小时';
+                        break;
+                    case 3:
+                        timeText = '小于2小时';
+                        break;
+                    default:
+                        timeText = '所有时间';
+                }
+                
+                const packableText = savedFilters.is_packable ? '可打包' : '不限制打包';
+                const inductionText = savedFilters.is_induction ? '适合电磁炉炖煮' : '其他烹饪方式';
+                
+                filterSummary.innerHTML = `
+                    <div class="filter-tag">
+                        <div class="filter-tag-icon">🕒</div>
+                        <div>${timeText}</div>
+                    </div>
+                    <div class="filter-tag">
+                        <div class="filter-tag-icon">🍱</div>
+                        <div>${packableText}</div>
+                    </div>
+                    <div class="filter-tag">
+                        <div class="filter-tag-icon">🔥</div>
+                        <div>${inductionText}</div>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>菜谱选择 - 四时</title>
+    <style>
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('../assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        html, body, * {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
+        
+        :root {
+            --primary-red: #60281E;
+            --secondary-gold: #DAA520;
+            --accent-jade: #478778;
+            --warm-beige: #F5F5DC;
+            --ink-black: #2C2C2C;
+            --paper-white: #FEFEFE;
+            --border-gray: #D3D3D3;
+            --shadow-dark: rgba(44, 44, 44, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-white) 100%);
+            color: var(--ink-black);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-jade);
+        }
+
+        .back-button:hover {
+            background: transparent;
+            color: var(--accent-jade);
+            transform: translateY(-2px);
+        }
+
+        .location-info {
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .qingtuan-icon {
+            background: url('../assets/1.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .qingtuan-icon::after {
+            content: none !important;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-dark);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        .filter-section {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .filter-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-description {
+            font-size: 1rem;
+            color: var(--accent-jade);
+            margin-bottom: 2rem;
+        }
+
+        /* 时间过滤器样式 */
+        .time-filter {
+            margin-bottom: 2.5rem;
+        }
+
+        .filter-label {
+            font-size: 1.2rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .time-slider-container {
+            position: relative;
+            padding-top: 80px;
+            margin-bottom: 1.5rem;
+        }
+
+        .time-slider {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 10px;
+            border-radius: 5px;
+            background: var(--warm-beige);
+            outline: none;
+        }
+
+        .time-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 50px;
+            height: 50px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23C7302B"><path d="M18 6h-3.59l2.3-2.29a1 1 0 1 0-1.42-1.42L12 5.54l-3.29-3.3a1 1 0 1 0-1.42 1.42L9.59 6H6a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h12a4 4 0 0 0 4-4v-8a4 4 0 0 0-4-4zm2 12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8z"></path><path d="M12 8a1 1 0 0 0-1 1v5a1 1 0 0 0 2 0v-5a1 1 0 0 0-1-1z"></path></svg>') no-repeat center center;
+            background-size: contain;
+            cursor: pointer;
+            margin-top: -20px;
+            filter: drop-shadow(2px 2px 4px var(--shadow-dark));
+        }
+
+        .time-slider::-moz-range-thumb {
+            width: 50px;
+            height: 50px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23C7302B"><path d="M18 6h-3.59l2.3-2.29a1 1 0 1 0-1.42-1.42L12 5.54l-3.29-3.3a1 1 0 1 0-1.42 1.42L9.59 6H6a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h12a4 4 0 0 0 4-4v-8a4 4 0 0 0-4-4zm2 12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8z"></path><path d="M12 8a1 1 0 0 0-1 1v5a1 1 0 0 0 2 0v-5a1 1 0 0 0-1-1z"></path></svg>') no-repeat center center;
+            background-size: contain;
+            cursor: pointer;
+            filter: drop-shadow(2px 2px 4px var(--shadow-dark));
+        }
+
+        .time-marks {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .time-mark {
+            text-align: center;
+            position: relative;
+            width: 33.3%;
+        }
+
+        .time-mark::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: var(--border-gray);
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .time-mark:first-child::before {
+            left: 0;
+            transform: none;
+        }
+
+        .time-mark:last-child::before {
+            left: auto;
+            right: 0;
+            transform: none;
+        }
+
+        .time-mark span {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .time-value {
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 500;
+            color: var(--primary-red);
+        }
+
+        /* 包装和电磁炉选项样式 */
+        .option-filter {
+            margin-bottom: 2rem;
+        }
+
+        .option-buttons {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .option-button {
+            flex: 1;
+            background: var(--warm-beige);
+            border: 2px solid var(--border-gray);
+            border-radius: 12px;
+            padding: 1.5rem 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .option-button.active {
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            border-color: var(--accent-jade);
+        }
+
+        .option-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .option-text {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .submit-button {
+            background: var(--primary-red);
+            color: var(--paper-white);
+            border: none;
+            border-radius: 12px;
+            padding: 1.2rem 2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            margin-top: 1rem;
+            font-family: 'Noto Serif SC', serif;
+            width: 100%;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 6px 6px 16px var(--shadow-dark);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .option-buttons {
+                flex-direction: column;
+            }
+            
+            .time-mark span {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="cooking.html" class="back-button">← 返回上一页</a>
+            <div class="location-info" id="locationInfo">挪威</div>
+        </div>
+
+        <div class="title-section">
+            <div class="qingtuan-icon"></div>
+            <h1 class="page-title">菜谱筛选</h1>
+            <p class="page-subtitle">找到最适合您的菜谱</p>
+        </div>
+
+        <div class="filter-section">
+            <h2 class="filter-title">菜谱过滤器</h2>
+            <p class="filter-description">通过调整下列选项，我们将为您推荐最合适的菜谱</p>
+
+            <!-- 时间过滤器 -->
+            <div class="time-filter">
+                <label class="filter-label">烹饪时间:</label>
+                <div class="time-slider-container">
+                    <div class="time-marks">
+                        <div class="time-mark">
+                            <span>小于30分钟</span>
+                        </div>
+                        <div class="time-mark">
+                            <span>小于1小时</span>
+                        </div>
+                        <div class="time-mark">
+                            <span>小于2小时</span>
+                        </div>
+                    </div>
+                    <input type="range" min="1" max="3" step="1" value="2" class="time-slider" id="timeSlider">
+                </div>
+                <div class="time-value" id="timeValue">小于1小时</div>
+            </div>
+
+            <!-- 包装选项 -->
+            <div class="option-filter">
+                <label class="filter-label">是否可打包（少汤水）:</label>
+                <div class="option-buttons" id="packableOptions">
+                    <div class="option-button" data-value="yes" onclick="selectOption('packableOptions', this)">
+                        <div class="option-icon">✓</div>
+                        <div class="option-text">可以打包</div>
+                    </div>
+                    <div class="option-button" data-value="no" onclick="selectOption('packableOptions', this)">
+                        <div class="option-icon">✗</div>
+                        <div class="option-text">不适合打包</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 电磁炉选项 -->
+            <div class="option-filter">
+                <label class="filter-label">是否优先炖煮（适合电磁炉使用）:</label>
+                <div class="option-buttons" id="inductionOptions">
+                    <div class="option-button" data-value="yes" onclick="selectOption('inductionOptions', this)">
+                        <div class="option-icon">✓</div>
+                        <div class="option-text">适合电磁炉炖煮</div>
+                    </div>
+                    <div class="option-button" data-value="no" onclick="selectOption('inductionOptions', this)">
+                        <div class="option-icon">✗</div>
+                        <div class="option-text">其他烹饪方式</div>
+                    </div>
+                </div>
+            </div>
+
+            <button class="submit-button" onclick="generateRecipes()">生成菜谱推荐</button>
+        </div>
+    </div>
+
+    <script src="api-utils.js"></script>
+    <script>
+        // 页面加载时显示用户位置
+        window.addEventListener('load', async function() {
+            const savedLocation = await api.getUserLocation();
+            const locationInfo = document.getElementById('locationInfo');
+            
+            if (savedLocation) {
+                const locationNames = {
+                    'norway': '挪威',
+                    'sweden': '瑞典',
+                    'denmark': '丹麦',
+                    'finland': '芬兰',
+                    'iceland': '冰岛',
+                    'germany': '德国',
+                    'netherlands': '荷兰',
+                    'france': '法国',
+                    'uk': '英国',
+                    'other': '欧洲'
+                };
+                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            }
+
+            // 初始化时间滑块显示
+            updateTimeValue();
+        });
+
+        // 处理时间滑块变化
+        const timeSlider = document.getElementById('timeSlider');
+        const timeValue = document.getElementById('timeValue');
+
+        timeSlider.addEventListener('input', updateTimeValue);
+
+        function updateTimeValue() {
+            const value = timeSlider.value;
+            let timeText = '';
+            
+            switch(parseInt(value)) {
+                case 1:
+                    timeText = '小于30分钟';
+                    break;
+                case 2:
+                    timeText = '小于1小时';
+                    break;
+                case 3:
+                    timeText = '小于2小时';
+                    break;
+            }
+            
+            timeValue.textContent = timeText;
+        }
+
+        // 处理选项按钮选择
+        function selectOption(groupId, selectedButton) {
+            const buttons = document.querySelectorAll(`#${groupId} .option-button`);
+            
+            buttons.forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            selectedButton.classList.add('active');
+        }
+
+        // 生成菜谱推荐
+        async function generateRecipes() {
+            // 获取所有选项
+            const cookingTime = parseInt(document.getElementById('timeSlider').value);
+            
+            const packableOptions = document.querySelectorAll('#packableOptions .option-button');
+            let isPackable = null;
+            packableOptions.forEach(button => {
+                if (button.classList.contains('active')) {
+                    isPackable = button.dataset.value === 'yes';
+                }
+            });
+            
+            const inductionOptions = document.querySelectorAll('#inductionOptions .option-button');
+            let isInduction = null;
+            inductionOptions.forEach(button => {
+                if (button.classList.contains('active')) {
+                    isInduction = button.dataset.value === 'yes';
+                }
+            });
+            
+            // 检查是否所有选项都已选择
+            if (isPackable === null || isInduction === null) {
+                alert('请完成所有选项的选择！');
+                return;
+            }
+
+            // 将选择保存到数据库
+            const recipeFilters = {
+                cooking_time: cookingTime,
+                is_packable: isPackable,
+                is_induction: isInduction
+            };
+            
+            try {
+                await api.setRecipeFilters(recipeFilters);
+                // 跳转到菜谱生成页面
+                window.location.href = 'recipe-result.html';
+            } catch (error) {
+                alert('保存筛选条件失败，请重试');
+                console.error('保存筛选条件失败:', error);
+            }
+        }
+    </script>
+</body>
+</html>

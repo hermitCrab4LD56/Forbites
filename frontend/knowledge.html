@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人知识库 - 四时</title>
+    <style>
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('../assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        html, body, * {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
+        
+        :root {
+            --primary-red: #60281E;
+            --secondary-gold: #DAA520;
+            --accent-jade: #478778;
+            --warm-beige: #F5F5DC;
+            --ink-black: #2C2C2C;
+            --paper-white: #FEFEFE;
+            --border-gray: #D3D3D3;
+            --shadow-dark: rgba(44, 44, 44, 0.2);
+            --light-jade: rgba(71, 135, 120, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-white) 100%);
+            color: var(--ink-black);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-jade);
+        }
+
+        .back-button:hover {
+            background: transparent;
+            color: var(--accent-jade);
+            transform: translateY(-2px);
+        }
+
+        .location-info {
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .zongzi-icon {
+            background: url('../assets/0.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .zongzi-icon::after {
+            content: none !important;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-dark);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        .knowledge-form {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .form-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--accent-jade);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--ink-black);
+            margin-bottom: 0.8rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--secondary-gold);
+            box-shadow: 0 0 8px rgba(218, 165, 32, 0.3);
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .file-input-container {
+            position: relative;
+        }
+
+        .file-input-label {
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--light-jade);
+            color: var(--accent-jade);
+            border: 2px dashed var(--accent-jade);
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .file-input-label:hover {
+            background: var(--accent-jade);
+            color: var(--paper-white);
+        }
+
+        .file-input {
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-name {
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+            text-align: center;
+            color: var(--accent-jade);
+        }
+
+        .submit-button {
+            background: var(--primary-red);
+            color: var(--paper-white);
+            border: none;
+            border-radius: 12px;
+            padding: 1.2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            font-family: 'Noto Serif SC', serif;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 6px 6px 16px var(--shadow-dark);
+        }
+
+        .knowledge-items {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .knowledge-card {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            position: relative;
+        }
+
+        .knowledge-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .knowledge-content {
+            padding: 1.5rem;
+        }
+
+        .knowledge-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-jade);
+            margin-bottom: 1rem;
+        }
+
+        .knowledge-text {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--ink-black);
+        }
+
+        .knowledge-date {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--accent-jade);
+            background: var(--light-jade);
+            border-radius: 16px;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .empty-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .delete-button {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: var(--primary-red);
+            color: var(--paper-white);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .delete-button:hover {
+            background: var(--ink-black);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .knowledge-items {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="dictionary.html" class="back-button">← 返回词典</a>
+            <div class="location-info" id="locationInfo">挪威</div>
+        </div>
+
+        <div class="title-section">
+            <div class="zongzi-icon"></div>
+            <h1 class="page-title">个人知识库</h1>
+            <p class="page-subtitle">记录您的烹饪心得和发现</p>
+        </div>
+
+        <div class="knowledge-form">
+            <h2 class="form-title">添加新知识</h2>
+            <form id="knowledgeForm">
+                <div class="form-group">
+                    <label for="title" class="form-label">标题</label>
+                    <input type="text" id="title" name="title" class="form-input" placeholder="例如：挪威超市鱼类购买指南" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="content" class="form-label">内容</label>
+                    <textarea id="content" name="content" class="form-input form-textarea" placeholder="写下您想记录的知识、经验或心得..." required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">添加图片（可选）</label>
+                    <div class="file-input-container">
+                        <label for="image" class="file-input-label">
+                            选择图片文件
+                        </label>
+                        <input type="file" id="image" name="image" class="file-input" accept="image/*">
+                        <div id="fileName" class="file-name">未选择文件</div>
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-button">保存到知识库</button>
+            </form>
+        </div>
+
+        <div class="knowledge-items" id="knowledgeItems">
+            <!-- 知识卡片将在这里动态显示 -->
+        </div>
+    </div>
+
+    <script src="api-utils.js"></script>
+    <script>
+        // 页面加载时显示用户位置和加载知识库
+        window.addEventListener('load', async function() {
+            const savedLocation = await api.getUserLocation();
+            const locationInfo = document.getElementById('locationInfo');
+            
+            if (savedLocation) {
+                const locationNames = {
+                    'norway': '挪威',
+                    'sweden': '瑞典',
+                    'denmark': '丹麦',
+                    'finland': '芬兰',
+                    'iceland': '冰岛',
+                    'germany': '德国',
+                    'netherlands': '荷兰',
+                    'france': '法国',
+                    'uk': '英国',
+                    'other': '欧洲'
+                };
+                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            }
+            
+            // 显示文件名
+            document.getElementById('image').addEventListener('change', function() {
+                const fileName = this.files[0] ? this.files[0].name : '未选择文件';
+                document.getElementById('fileName').textContent = fileName;
+            });
+            
+            // 加载知识库内容
+            await loadKnowledgeItems();
+        });
+
+        // 表单提交处理
+        document.getElementById('knowledgeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            const imageFile = document.getElementById('image').files[0];
+            
+            if (!title || !content) {
+                alert('请填写标题和内容！');
+                return;
+            }
+            
+            // 创建新知识项
+            const knowledgeItem = {
+                id: Date.now(),
+                title: title,
+                content: content,
+                date: new Date().toISOString().split('T')[0]
+            };
+            
+            // 如果有图片，转换为 base64
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    knowledgeItem.image = event.target.result;
+                    saveKnowledgeItem(knowledgeItem);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                saveKnowledgeItem(knowledgeItem);
+            }
+        });
+
+        // 保存知识项到数据库
+        async function saveKnowledgeItem(item) {
+            try {
+                await api.createKnowledgeItem(item);
+                
+                // 重置表单
+                document.getElementById('knowledgeForm').reset();
+                document.getElementById('fileName').textContent = '未选择文件';
+                
+                // 重新加载知识库
+                await loadKnowledgeItems();
+            } catch (error) {
+                alert('保存失败，请重试');
+                console.error('保存知识项失败:', error);
+            }
+        }
+
+        // 加载知识库项目
+        async function loadKnowledgeItems() {
+            try {
+                const knowledgeItems = await api.getKnowledgeItems();
+                const container = document.getElementById('knowledgeItems');
+                
+                if (knowledgeItems.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">📝</div>
+                            <div class="empty-title">您的知识库还是空的</div>
+                            <div class="empty-text">添加您的第一条知识记录，开始积累烹饪经验吧！</div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                // 反向遍历，最新的显示在前面
+                knowledgeItems.slice().reverse().forEach(item => {
+                    const card = document.createElement('div');
+                    card.className = 'knowledge-card';
+                    
+                    let imageHtml = '';
+                    if (item.image) {
+                        imageHtml = `<img src="${item.image}" alt="${item.title}" class="knowledge-image">`;
+                    }
+                    
+                    card.innerHTML = `
+                        ${imageHtml}
+                        <button class="delete-button" onclick="deleteKnowledgeItem(${item.id})">×</button>
+                        <div class="knowledge-date">${item.date}</div>
+                        <div class="knowledge-content">
+                            <h3 class="knowledge-title">${item.title}</h3>
+                            <p class="knowledge-text">${item.content}</p>
+                        </div>
+                    `;
+                    
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('加载知识库失败:', error);
+                const container = document.getElementById('knowledgeItems');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❌</div>
+                        <div class="empty-title">加载失败</div>
+                        <div class="empty-text">无法加载知识库，请检查网络连接</div>
+                    </div>
+                `;
+            }
+        }
+
+        // 删除知识项
+        async function deleteKnowledgeItem(id) {
+            if (confirm('确定要删除这条知识记录吗？')) {
+                try {
+                    await api.deleteKnowledgeItem(id);
+                    // 重新加载知识库
+                    await loadKnowledgeItems();
+                } catch (error) {
+                    alert('删除失败，请重试');
+                    console.error('删除知识项失败:', error);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

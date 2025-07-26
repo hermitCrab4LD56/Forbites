@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>厨具科普 - 四时</title>
+    <style>
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('../assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        html, body, * {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
+        
+        :root {
+            --primary-red: #60281E;
+            --secondary-gold: #DAA520;
+            --accent-jade: #478778;
+            --warm-beige: #F5F5DC;
+            --ink-black: #2C2C2C;
+            --paper-white: #FEFEFE;
+            --border-gray: #D3D3D3;
+            --shadow-dark: rgba(44, 44, 44, 0.2);
+            --light-jade: rgba(71, 135, 120, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-white) 100%);
+            color: var(--ink-black);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-jade);
+        }
+
+        .back-button:hover {
+            background: transparent;
+            color: var(--accent-jade);
+            transform: translateY(-2px);
+        }
+
+        .location-info {
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .zongzi-icon {
+            background: url('../assets/0.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .zongzi-icon::after {
+            content: none !important;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-dark);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        .cookware-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .cookware-card {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            transition: all 0.3s ease;
+        }
+
+        .cookware-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 6px 6px 16px var(--shadow-dark);
+        }
+
+        .cookware-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .cookware-content {
+            padding: 1.5rem;
+        }
+
+        .cookware-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-jade);
+            margin-bottom: 1rem;
+        }
+
+        .cookware-description {
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            color: var(--ink-black);
+        }
+
+        .cookware-uses-title {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: var(--primary-red);
+            margin-bottom: 0.8rem;
+        }
+
+        .cookware-uses-list {
+            list-style-position: inside;
+            margin-left: 1rem;
+        }
+
+        .cookware-uses-item {
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .cookware-tip {
+            background: var(--light-jade);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--accent-jade);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .cookware-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="dictionary.html" class="back-button">← 返回词典</a>
+            <div class="location-info" id="locationInfo">挪威</div>
+        </div>
+
+        <div class="title-section">
+            <div class="zongzi-icon"></div>
+            <h1 class="page-title">厨具科普</h1>
+            <p class="page-subtitle">挪威常见厨具使用指南</p>
+        </div>
+
+        <div class="cookware-grid">
+            <!-- 挪威锅具1：平底锅 -->
+            <div class="cookware-card">
+                <img src="https://d2d9hom4y5lr0f.cloudfront.net/2020/09/The-Best-Scandinavian-Cookware-for-Your-Home-Scandinavia-Standard.jpg" alt="挪威平底锅" class="cookware-image">
+                <div class="cookware-content">
+                    <h3 class="cookware-title">Stekepanne（平底锅）</h3>
+                    <p class="cookware-description">
+                        挪威家庭最常见的锅具，通常采用高质量的铸铁或不粘涂层材质。北欧设计的平底锅通常较重，热传导性能好，适合长时间烹饪。
+                    </p>
+                    <h4 class="cookware-uses-title">适合烹饪：</h4>
+                    <ul class="cookware-uses-list">
+                        <li class="cookware-uses-item">煎鸡蛋、煎饼、薄煎饼（Pannekaker）</li>
+                        <li class="cookware-uses-item">炒蔬菜、炒肉类</li>
+                        <li class="cookware-uses-item">煎三文鱼排（Lakseskiver）</li>
+                    </ul>
+                    <div class="cookware-tip">
+                        小贴士：挪威平底锅通常比中式炒锅要厚重，热传导更均匀但升温较慢，适合使用中火慢慢烹饪。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 挪威锅具2：炖锅 -->
+            <div class="cookware-card">
+                <img src="https://d2d9hom4y5lr0f.cloudfront.net/2020/09/SCANPAN-MAITRE-D-COPPER-SAUCEPAN-The-Best-Scandinavian-Cookwear-for-Your-Home-Scandinavian-Standards.jpg" alt="挪威炖锅" class="cookware-image">
+                <div class="cookware-content">
+                    <h3 class="cookware-title">Gryte（炖锅）</h3>
+                    <p class="cookware-description">
+                        深口厚底的炖锅，常见于挪威家庭厨房，适合长时间炖煮。通常由铸铁、搪瓷或不锈钢制成，热量分布均匀，保温性能好。
+                    </p>
+                    <h4 class="cookware-uses-title">适合烹饪：</h4>
+                    <ul class="cookware-uses-list">
+                        <li class="cookware-uses-item">炖肉（Lapskaus）、肉丸汤（Kjøttboller）</li>
+                        <li class="cookware-uses-item">海鲜汤（Fiskesuppe）</li>
+                        <li class="cookware-uses-item">炖豆类和根茎类蔬菜</li>
+                        <li class="cookware-uses-item">煮意面、土豆等主食</li>
+                    </ul>
+                    <div class="cookware-tip">
+                        小贴士：挪威炖锅通常有较高的边缘和厚实的底部，非常适合制作中式炖菜和煲汤。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 挪威锅具3：分隔锅 -->
+            <div class="cookware-card">
+                <img src="https://www.nordicware.com/wp-content/uploads/2021/04/14622m_beauty_overhead_divided_pans_780x780_01__67084.1617722790.1280.1280.jpg" alt="挪威分隔锅" class="cookware-image">
+                <div class="cookware-content">
+                    <h3 class="cookware-title">Delt panne（分隔锅）</h3>
+                    <p class="cookware-description">
+                        这种特殊的锅具在北欧地区较为流行，一个锅底被分为两个或多个部分，允许同时烹饪不同的食材而不混合。
+                    </p>
+                    <h4 class="cookware-uses-title">适合烹饪：</h4>
+                    <ul class="cookware-uses-list">
+                        <li class="cookware-uses-item">同时烹饪两种不同配菜</li>
+                        <li class="cookware-uses-item">一面煎鱼，一面炒蔬菜</li>
+                        <li class="cookware-uses-item">制作不同口味的煎蛋</li>
+                    </ul>
+                    <div class="cookware-tip">
+                        小贴士：这种锅对于小家庭或单身人士特别实用，可以同时准备主食和配菜，节省时间和能源。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 挪威锅具4：传统松饼锅 -->
+            <div class="cookware-card">
+                <img src="https://www.nordicware.com/wp-content/uploads/2021/04/01740_ebelskiver_iron_stovetop_07_e__84865.1617722773.1280.1280.jpg" alt="传统松饼锅" class="cookware-image">
+                <div class="cookware-content">
+                    <h3 class="cookware-title">Ebelskiverpanne（松饼锅）</h3>
+                    <p class="cookware-description">
+                        这种传统的斯堪的纳维亚锅具有多个圆形凹陷，用于制作丹麦球形松饼Ebelskiver。在挪威也很受欢迎，常用于制作类似小点心。
+                    </p>
+                    <h4 class="cookware-uses-title">适合烹饪：</h4>
+                    <ul class="cookware-uses-list">
+                        <li class="cookware-uses-item">丹麦球形松饼（Ebelskiver）</li>
+                        <li class="cookware-uses-item">迷你蛋挞或小煎蛋</li>
+                        <li class="cookware-uses-item">中式蛋饺、小煎包</li>
+                    </ul>
+                    <div class="cookware-tip">
+                        小贴士：这种锅具可以创造性地用于制作中式点心，如蛋饺、小煎包等，效果出奇地好！
+                    </div>
+                </div>
+            </div>
+
+            <!-- 挪威锅具5：烤盘 -->
+            <div class="cookware-card">
+                <img src="https://www.nordicware.com/wp-content/uploads/2024/09/12664M_Basalt_9_PC_Set_Lifestyle_2025_1_1000x1000__90467.1744919984.1280.1280-600x600.jpg" alt="北欧烤盘" class="cookware-image">
+                <div class="cookware-content">
+                    <h3 class="cookware-title">Stekeplate（烤盘）</h3>
+                    <p class="cookware-description">
+                        挪威家庭常用的烤盘，通常采用高品质的不粘涂层或铸铁材质，适合在烤箱中使用。设计通常注重实用性和美观性。
+                    </p>
+                    <h4 class="cookware-uses-title">适合烹饪：</h4>
+                    <ul class="cookware-uses-list">
+                        <li class="cookware-uses-item">烤三文鱼（Ovnsbakt laks）</li>
+                        <li class="cookware-uses-item">各种面包和甜点</li>
+                        <li class="cookware-uses-item">烤蔬菜拼盘</li>
+                        <li class="cookware-uses-item">中式烤鸡翅、烤排骨</li>
+                    </ul>
+                    <div class="cookware-tip">
+                        小贴士：北欧烤盘通常有出色的导热性能，非常适合用来烤制中式烧烤类食品，只需调整温度和时间。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 挪威锅具6：传统搪瓷锅具 -->
+            <div class="cookware-card">
+                <img src="https://i0.wp.com/www.hammerandaheadband.com/wp-content/uploads/2021/09/cathrineholm-lotus-enamelware-collection.jpg?fit=1200%2C800&ssl=1" alt="传统搪瓷锅具" class="cookware-image">
+                <div class="cookware-content">
+                    <h3 class="cookware-title">Emaljerte gryter（搪瓷锅）</h3>
+                    <p class="cookware-description">
+                        挪威传统搪瓷锅具，特别是Cathrineholm品牌的莲花图案搪瓷锅，既是实用的烹饪工具，也是北欧设计的代表作品。
+                    </p>
+                    <h4 class="cookware-uses-title">适合烹饪：</h4>
+                    <ul class="cookware-uses-list">
+                        <li class="cookware-uses-item">各类炖煮类菜肴</li>
+                        <li class="cookware-uses-item">热汤和粥类</li>
+                        <li class="cookware-uses-item">煮意面和土豆</li>
+                    </ul>
+                    <div class="cookware-tip">
+                        小贴士：搪瓷锅具有良好的保温性能，色彩鲜艳美观，但需注意避免剧烈碰撞，以免搪瓷层脱落。
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时显示用户位置
+        window.addEventListener('load', function() {
+            const savedLocation = localStorage.getItem('userLocation');
+            const locationInfo = document.getElementById('locationInfo');
+            
+            if (savedLocation) {
+                const locationNames = {
+                    'norway': '挪威',
+                    'sweden': '瑞典',
+                    'denmark': '丹麦',
+                    'finland': '芬兰',
+                    'iceland': '冰岛',
+                    'germany': '德国',
+                    'netherlands': '荷兰',
+                    'france': '法国',
+                    'uk': '英国',
+                    'other': '欧洲'
+                };
+                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            }
+        });
+    </script>
+</body>
+</html>

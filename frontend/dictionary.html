@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>词典 - 四时</title>
+    <style>
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('../assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        html, body, * {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
+        
+        :root {
+            --primary-red: #60281E;
+            --secondary-gold: #DAA520;
+            --accent-jade: #478778;
+            --warm-beige: #F5F5DC;
+            --ink-black: #2C2C2C;
+            --paper-white: #FEFEFE;
+            --border-gray: #D3D3D3;
+            --shadow-dark: rgba(44, 44, 44, 0.2);
+            --light-blue: #E6F7FF;
+            --success-green: #52C41A;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-white) 100%);
+            color: var(--ink-black);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-jade);
+        }
+
+        .back-button:hover {
+            background: transparent;
+            color: var(--accent-jade);
+            transform: translateY(-2px);
+        }
+
+        .location-info {
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .zongzi-icon {
+            background: url('../assets/0.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .zongzi-icon::after {
+            content: none !important;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-dark);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+        }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            min-height: 600px;
+        }
+
+        .sidebar {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            height: fit-content;
+        }
+
+        .sidebar-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .sidebar-option {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .sidebar-option:hover {
+            border-color: var(--secondary-gold);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px var(--shadow-dark);
+        }
+
+        .sidebar-option.active {
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            border-color: var(--secondary-gold);
+        }
+
+        .content-area {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .content-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .dictionary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .dictionary-item {
+            background: var(--light-blue);
+            border: 2px solid var(--border-gray);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dictionary-item:hover {
+            transform: translateY(-4px);
+            border-color: var(--accent-jade);
+            box-shadow: 0 6px 16px var(--shadow-dark);
+        }
+
+        .food-illustration {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: 8px;
+            filter: drop-shadow(2px 2px 4px var(--shadow-dark));
+        }
+
+        .chinese-name {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--ink-black);
+            margin-bottom: 0.5rem;
+        }
+
+        .norwegian-name {
+            font-size: 1.1rem;
+            color: var(--accent-jade);
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+        }
+
+        .pronunciation {
+            font-size: 0.9rem;
+            color: var(--secondary-gold);
+            font-style: italic;
+        }
+
+        .coming-soon {
+            text-align: center;
+            padding: 3rem;
+            color: var(--accent-jade);
+            font-size: 1.2rem;
+            font-style: italic;
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            background: var(--paper-white);
+            color: var(--ink-black);
+            font-family: 'Noto Serif SC', serif;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--secondary-gold);
+            box-shadow: 0 0 8px rgba(218, 165, 32, 0.3);
+        }
+
+        /* 特定食物插画样式 */
+        .tomato { background: radial-gradient(circle, #FF6347 60%, #DC143C 90%); }
+        .cucumber { background: linear-gradient(45deg, #90EE90 40%, #228B22 80%); }
+        .onion { background: radial-gradient(circle, #FFE4B5 50%, #DEB887 90%); }
+        .garlic { background: radial-gradient(circle, #F5F5DC 60%, #D3D3D3 90%); }
+        .ginger { background: linear-gradient(45deg, #DAA520 40%, #B8860B 80%); }
+        .potato { background: radial-gradient(circle, #DEB887 60%, #D2691E 90%); }
+        .carrot { background: linear-gradient(45deg, #FF8C00 40%, #FF4500 80%); }
+        .cabbage { background: radial-gradient(circle, #98FB98 50%, #90EE90 90%); }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .main-layout {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .dictionary-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="../index.html" class="back-button">← 返回首页</a>
+            <div class="location-info" id="locationInfo">挪威</div>
+        </div>
+
+        <div class="title-section">
+            <div class="zongzi-icon"></div>
+            <h1 class="page-title">词典</h1>
+            <p class="page-subtitle">中挪双语烹饪词典</p>
+        </div>
+
+        <div class="main-layout">
+            <div class="sidebar">
+                <div class="sidebar-title">词典分类</div>
+                <div class="sidebar-option active" onclick="showContent('common-words')">常用词典</div>
+                <div class="sidebar-option" onclick="showContent('cookware')">厨具科普</div>
+                <div class="sidebar-option" onclick="showContent('oils')">油类科普</div>
+                <div class="sidebar-option" onclick="showContent('my-knowledge')">我的知识库</div>
+            </div>
+
+            <div class="content-area">
+                <!-- 常用词典内容 -->
+                <div id="common-words" class="content-section">
+                    <div class="content-title">常用食材中挪对照</div>
+                    <input type="text" class="search-box" placeholder="搜索食材..." onkeyup="searchDictionary(this.value)">
+                    
+                    <div class="dictionary-grid" id="dictionaryGrid">
+                        <div class="dictionary-item" data-chinese="西红柿" data-norwegian="tomat">
+                            <div class="food-illustration tomato"></div>
+                            <div class="chinese-name">西红柿</div>
+                            <div class="norwegian-name">Tomat</div>
+                            <div class="pronunciation">[too-MAHT]</div>
+                        </div>
+
+                        <div class="dictionary-item" data-chinese="黄瓜" data-norwegian="agurk">
+                            <div class="food-illustration cucumber"></div>
+                            <div class="chinese-name">黄瓜</div>
+                            <div class="norwegian-name">Agurk</div>
+                            <div class="pronunciation">[AH-goork]</div>
+                        </div>
+
+                        <div class="dictionary-item" data-chinese="洋葱" data-norwegian="løk">
+                            <div class="food-illustration onion"></div>
+                            <div class="chinese-name">洋葱</div>
+                            <div class="norwegian-name">Løk</div>
+                            <div class="pronunciation">[lurk]</div>
+                        </div>
+
+                        <div class="dictionary-item" data-chinese="大蒜" data-norwegian="hvitløk">
+                            <div class="food-illustration garlic"></div>
+                            <div class="chinese-name">大蒜</div>
+                            <div class="norwegian-name">Hvitløk</div>
+                            <div class="pronunciation">[VEET-lurk]</div>
+                        </div>
+
+                        <div class="dictionary-item" data-chinese="生姜" data-norwegian="ingefær">
+                            <div class="food-illustration ginger"></div>
+                            <div class="chinese-name">生姜</div>
+                            <div class="norwegian-name">Ingefær</div>
+                            <div class="pronunciation">[ING-eh-fair]</div>
+                        </div>
+
+                        <div class="dictionary-item" data-chinese="土豆" data-norwegian="potet">
+                            <div class="food-illustration potato"></div>
+                            <div class="chinese-name">土豆</div>
+                            <div class="norwegian-name">Potet</div>
+                            <div class="pronunciation">[poo-TEHT]</div>
+                        </div>
+
+                        <div class="dictionary-item" data-chinese="胡萝卜" data-norwegian="gulrot">
+                            <div class="food-illustration carrot"></div>
+                            <div class="chinese-name">胡萝卜</div>
+                            <div class="norwegian-name">Gulrot</div>
+                            <div class="pronunciation">[GOOL-root]</div>
+                        </div>
+
+                        <div class="dictionary-item" data-chinese="白菜" data-norwegian="kål">
+                            <div class="food-illustration cabbage"></div>
+                            <div class="chinese-name">白菜</div>
+                            <div class="norwegian-name">Kål</div>
+                            <div class="pronunciation">[kohl]</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 厨具科普内容 -->
+                <div id="cookware" class="content-section" style="display: none;">
+                    <div class="content-title">厨具科普</div>
+                    <p style="text-align: center; margin-bottom: 2rem;">
+                        了解挪威常见厨具及其使用方法
+                    </p>
+                    <a href="cookware.html" class="cook-button" style="display: block; text-align: center; margin: 0 auto; max-width: 200px; padding: 1rem; background: var(--accent-jade); color: var(--paper-white); text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.3s ease;">
+                        查看厨具科普
+                    </a>
+                </div>
+
+                <!-- 油类科普内容 -->
+                <div id="oils" class="content-section" style="display: none;">
+                    <div class="content-title">油类科普</div>
+                    <p style="text-align: center; margin-bottom: 2rem;">
+                        了解挪威常见烹饪用油及其适用场景
+                    </p>
+                    <a href="oils.html" class="cook-button" style="display: block; text-align: center; margin: 0 auto; max-width: 200px; padding: 1rem; background: var(--accent-jade); color: var(--paper-white); text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.3s ease;">
+                        查看油类科普
+                    </a>
+                </div>
+
+                <!-- 我的知识库内容 -->
+                <div id="my-knowledge" class="content-section" style="display: none;">
+                    <div class="content-title">我的知识库</div>
+                    <p style="text-align: center; margin-bottom: 2rem;">
+                        记录您的烹饪心得和发现
+                    </p>
+                    <a href="knowledge.html" class="cook-button" style="display: block; text-align: center; margin: 0 auto; max-width: 200px; padding: 1rem; background: var(--accent-jade); color: var(--paper-white); text-decoration: none; border-radius: 8px; font-weight: 500; transition: all 0.3s ease;">
+                        进入我的知识库
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时显示用户位置
+        window.addEventListener('load', function() {
+            const savedLocation = localStorage.getItem('userLocation');
+            const locationInfo = document.getElementById('locationInfo');
+            
+            if (savedLocation) {
+                const locationNames = {
+                    'norway': '挪威',
+                    'sweden': '瑞典',
+                    'denmark': '丹麦',
+                    'finland': '芬兰',
+                    'iceland': '冰岛',
+                    'germany': '德国',
+                    'netherlands': '荷兰',
+                    'france': '法国',
+                    'uk': '英国',
+                    'other': '欧洲'
+                };
+                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            }
+        });
+
+        function showContent(contentId) {
+            // 隐藏所有内容区域
+            const allSections = document.querySelectorAll('.content-section');
+            allSections.forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // 移除所有侧边栏选项的活动状态
+            const allOptions = document.querySelectorAll('.sidebar-option');
+            allOptions.forEach(option => {
+                option.classList.remove('active');
+            });
+
+            // 显示选中的内容区域
+            document.getElementById(contentId).style.display = 'block';
+
+            // 激活选中的侧边栏选项
+            event.target.classList.add('active');
+        }
+
+        function searchDictionary(searchTerm) {
+            const items = document.querySelectorAll('.dictionary-item');
+            const searchLower = searchTerm.toLowerCase();
+
+            items.forEach(item => {
+                const chinese = item.dataset.chinese.toLowerCase();
+                const norwegian = item.dataset.norwegian.toLowerCase();
+                
+                if (chinese.includes(searchLower) || norwegian.includes(searchLower)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // 词典项点击事件
+        document.addEventListener('DOMContentLoaded', function() {
+            const dictionaryItems = document.querySelectorAll('.dictionary-item');
+            
+            dictionaryItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const chinese = this.dataset.chinese;
+                    const norwegian = this.dataset.norwegian;
+                    
+                    // 可以添加发音功能或详细信息显示
+                    console.log(`选择了: ${chinese} - ${norwegian}`);
+                    
+                    // 这里可以添加语音播放功能
+                    if ('speechSynthesis' in window) {
+                        const utterance = new SpeechSynthesisUtterance(norwegian);
+                        utterance.lang = 'no-NO';
+                        speechSynthesis.speak(utterance);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

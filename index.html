@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>四时 - 中式生活美学</title>
+    <style>
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        
+        :root {
+            --primary-red: #60281E;
+            --secondary-gold: #DAA520;
+            --accent-jade: #478778;
+            --warm-beige: #F5F5DC;
+            --ink-black: #2C2C2C;
+            --paper-white: #FEFEFE;
+            --border-gray: #D3D3D3;
+            --shadow-dark: rgba(44, 44, 44, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
+
+        body {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-white) 100%);
+            color: var(--ink-black);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .title {
+            font-size: 7rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-dark);
+            letter-spacing: 0.2em;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 3rem;
+            margin: 3rem 0;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .food-item {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .food-item::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(218, 165, 32, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .food-item:hover::before {
+            opacity: 1;
+            animation: shimmer 0.6s ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .food-item:hover {
+            transform: translateY(-8px);
+            border-color: var(--secondary-gold);
+            box-shadow: 6px 6px 20px var(--shadow-dark);
+        }
+
+        .food-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            image-rendering: pixelated;
+            filter: drop-shadow(2px 2px 4px var(--shadow-dark));
+        }
+
+        .qingtuan .food-icon,
+        .zongzi .food-icon,
+        .mooncake .food-icon,
+        .dumpling .food-icon {
+            width: 140px;
+            height: 140px;
+        }
+
+        .qingtuan .food-icon {
+            background: url('assets/1.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .qingtuan .food-icon::after {
+            content: none !important;
+        }
+
+        .zongzi .food-icon {
+            background: url('assets/0.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .zongzi .food-icon::after {
+            content: none !important;
+        }
+
+        .mooncake .food-icon {
+            background: url('assets/2.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .mooncake .food-icon::after {
+            content: none !important;
+        }
+
+        .dumpling .food-icon {
+            background: url('assets/3.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .dumpling .food-icon::after {
+            content: none !important;
+        }
+
+        .food-label {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+
+        .food-description {
+            font-size: 1rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+        }
+
+        .location-selector {
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .location-label {
+            font-size: 1.1rem;
+            color: var(--ink-black);
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .location-select {
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            background: var(--paper-white);
+            color: var(--ink-black);
+            font-family: 'ShuQingGuKaiTi', serif !important;
+            min-width: 200px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .location-select:focus {
+            outline: none;
+            border-color: var(--secondary-gold);
+            box-shadow: 0 0 8px rgba(218, 165, 32, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .food-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .title {
+                font-size: 3rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">四时</h1>
+            <p class="subtitle">中式生活美学</p>
+        </div>
+
+        <div class="food-grid">
+            <div class="food-item qingtuan" onclick="navigateToPage('cooking')">
+                <div class="food-icon"></div>
+                <div class="food-label">青团</div>
+                <div class="food-description">做饭</div>
+            </div>
+
+            <div class="food-item zongzi" onclick="navigateToPage('dictionary')">
+                <div class="food-icon"></div>
+                <div class="food-label">粽子</div>
+                <div class="food-description">词典</div>
+            </div>
+
+            <div class="food-item mooncake" onclick="navigateToPage('community')">
+                <div class="food-icon"></div>
+                <div class="food-label">月饼</div>
+                <div class="food-description">社区</div>
+            </div>
+
+            <div class="food-item dumpling" onclick="navigateToPage('ingredients')">
+                <div class="food-icon"></div>
+                <div class="food-label">饺子</div>
+                <div class="food-description">加料</div>
+            </div>
+        </div>
+
+        <div class="location-selector">
+            <div class="location-label">您目前所在的国家地区</div>
+            <select class="location-select" id="locationSelect">
+                <option value="">请选择您的位置</option>
+                <option value="norway">挪威 (Norge)</option>
+                <option value="sweden">瑞典 (Sverige)</option>
+                <option value="denmark">丹麦 (Danmark)</option>
+                <option value="finland">芬兰 (Suomi)</option>
+                <option value="iceland">冰岛 (Ísland)</option>
+                <option value="germany">德国 (Deutschland)</option>
+                <option value="netherlands">荷兰 (Nederland)</option>
+                <option value="france">法国 (France)</option>
+                <option value="uk">英国 (United Kingdom)</option>
+                <option value="other">其他欧洲国家</option>
+            </select>
+        </div>
+    </div>
+
+    <script>
+        function navigateToPage(page) {
+            const locationSelect = document.getElementById('locationSelect');
+            const selectedLocation = locationSelect.value;
+            
+            if (!selectedLocation) {
+                alert('请先选择您所在的国家地区');
+                locationSelect.focus();
+                return;
+            }
+
+            // 保存用户选择的位置到本地存储
+            localStorage.setItem('userLocation', selectedLocation);
+
+            // 只有挪威可用，其它地区弹窗提示
+            if (selectedLocation !== 'norway') {
+                showConstructionMessage();
+                return;
+            }
+            
+            // 导航到对应页面
+            switch(page) {
+                case 'cooking':
+                    window.location.href = 'frontend/cooking.html';
+                    break;
+                case 'dictionary':
+                    window.location.href = 'frontend/dictionary.html';
+                    break;
+                case 'community':
+                    window.location.href = 'frontend/community.html';
+                    break;
+                case 'ingredients':
+                    window.location.href = 'frontend/ingredients.html';
+                    break;
+                default:
+                    console.log('未知页面:', page);
+            }
+        }
+
+        // 页面加载时检查是否有保存的位置信息
+        window.addEventListener('load', function() {
+            const savedLocation = localStorage.getItem('userLocation');
+            if (savedLocation) {
+                document.getElementById('locationSelect').value = savedLocation;
+            }
+        });
+
+        // 位置选择改变时保存
+        document.getElementById('locationSelect').addEventListener('change', function() {
+            localStorage.setItem('userLocation', this.value);
+        });
+
+        // 显示施工中提示
+        function showConstructionMessage() {
+            // 检查是否已存在提示
+            if (document.getElementById('constructionMsg')) return;
+            const msg = document.createElement('div');
+            msg.id = 'constructionMsg';
+            msg.textContent = '施工中~请稍后再来噢';
+            msg.style.position = 'fixed';
+            msg.style.top = '30%';
+            msg.style.left = '50%';
+            msg.style.transform = 'translate(-50%, -50%)';
+            msg.style.background = '#fffbe6';
+            msg.style.color = '#C7302B';
+            msg.style.fontSize = '2rem';
+            msg.style.fontWeight = 'bold';
+            msg.style.fontFamily = 'ShuQingGuKaiTi, serif';
+            msg.style.padding = '2rem 3rem';
+            msg.style.border = '2px solid #DAA520';
+            msg.style.borderRadius = '16px';
+            msg.style.boxShadow = '0 8px 32px rgba(44,44,44,0.15)';
+            msg.style.zIndex = '9999';
+            document.body.appendChild(msg);
+            setTimeout(() => {
+                msg.remove();
+            }, 2000);
+        }
+    </script>
+</body>
+</html>

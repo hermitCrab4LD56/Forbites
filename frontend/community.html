@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社区 - 四时</title>
+    <style>
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('../assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        html, body, * {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
+        
+        :root {
+            --primary-red: #60281E;
+            --secondary-gold: #DAA520;
+            --accent-jade: #478778;
+            --warm-beige: #F5F5DC;
+            --ink-black: #2C2C2C;
+            --paper-white: #FEFEFE;
+            --border-gray: #D3D3D3;
+            --shadow-dark: rgba(44, 44, 44, 0.2);
+            --bubble-pink: #FFE4E1;
+            --bubble-blue: #E6F7FF;
+            --bubble-green: #F6FFED;
+            --bubble-yellow: #FFFBE6;
+            --bubble-purple: #F9F0FF;
+            --bubble-orange: #FFF7E6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-white) 100%);
+            color: var(--ink-black);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-jade);
+        }
+
+        .back-button:hover {
+            background: transparent;
+            color: var(--accent-jade);
+            transform: translateY(-2px);
+        }
+
+        .location-info {
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .mooncake-icon {
+            background: url('../assets/2.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .mooncake-icon::after {
+            content: none !important;
+        }
+
+        .page-title {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-dark);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+        }
+
+        .community-section {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+        }
+
+        .section-description {
+            font-size: 1.1rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+        }
+
+        .questions-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .question-bubble {
+            border-radius: 20px;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .question-bubble::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s ease;
+            opacity: 0;
+        }
+
+        .question-bubble:hover::before {
+            opacity: 1;
+            animation: shimmer 0.6s ease-in-out;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .question-bubble:hover {
+            transform: translateY(-8px);
+            border-color: var(--secondary-gold);
+            box-shadow: 6px 6px 20px var(--shadow-dark);
+        }
+
+        .question-bubble.pink { background: var(--bubble-pink); }
+        .question-bubble.blue { background: var(--bubble-blue); }
+        .question-bubble.green { background: var(--bubble-green); }
+        .question-bubble.yellow { background: var(--bubble-yellow); }
+        .question-bubble.purple { background: var(--bubble-purple); }
+        .question-bubble.orange { background: var(--bubble-orange); }
+
+        .question-icon {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 1rem;
+            filter: drop-shadow(2px 2px 4px var(--shadow-dark));
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--ink-black);
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .question-tags {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .question-tag {
+            background: rgba(44, 44, 44, 0.1);
+            color: var(--ink-black);
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .popular-badge {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: var(--primary-red);
+            color: var(--paper-white);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: 2px 2px 8px var(--shadow-dark);
+        }
+
+        .answer-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: var(--paper-white);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin: 2rem;
+            box-shadow: 8px 8px 24px var(--shadow-dark);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-gray);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-red);
+        }
+
+        .close-button {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--accent-jade);
+            padding: 0.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .close-button:hover {
+            background: var(--warm-beige);
+        }
+
+        .modal-answer {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--ink-black);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .page-title {
+                font-size: 2.5rem;
+            }
+            
+            .questions-container {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .modal-content {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="../index.html" class="back-button">← 返回首页</a>
+            <div class="location-info" id="locationInfo">挪威</div>
+        </div>
+
+        <div class="title-section">
+            <div class="mooncake-icon"></div>
+            <h1 class="page-title">社区</h1>
+            <p class="page-subtitle">留学生烹饪互助社区</p>
+        </div>
+
+        <div class="community-section">
+            <div class="section-header">
+                <h2 class="section-title">猜你想问</h2>
+                <p class="section-description">挪威留学生最常遇到的烹饪问题</p>
+            </div>
+
+            <div class="questions-container">
+                <div class="question-bubble pink" onclick="showAnswer('induction-cooker')">
+                    <div class="popular-badge">🔥</div>
+                    <div class="question-icon">🔌</div>
+                    <div class="question-text">怎么使用电磁炉？</div>
+                    <div class="question-tags">
+                        <span class="question-tag">新手必看</span>
+                        <span class="question-tag">电磁炉</span>
+                    </div>
+                </div>
+
+                <div class="question-bubble blue" onclick="showAnswer('induction-dishes')">
+                    <div class="question-icon">🍳</div>
+                    <div class="question-text">用电磁炉做什么菜比较好？</div>
+                    <div class="question-tags">
+                        <span class="question-tag">菜谱推荐</span>
+                        <span class="question-tag">简单易做</span>
+                    </div>
+                </div>
+
+                <div class="question-bubble green" onclick="showAnswer('frozen-salmon')">
+                    <div class="popular-badge">⭐</div>
+                    <div class="question-icon">🐟</div>
+                    <div class="question-text">怎么处理冷冻三文鱼？</div>
+                    <div class="question-tags">
+                        <span class="question-tag">挪威特产</span>
+                        <span class="question-tag">海鲜处理</span>
+                    </div>
+                </div>
+
+                <div class="question-bubble yellow" onclick="location.href='community-updates.html#oilstain'">
+                    <div class="question-icon">🧼</div>
+                    <div class="question-text">怎么去除电磁炉的油渍？</div>
+                    <div class="question-tags">
+                        <span class="question-tag">清洁技巧</span>
+                        <span class="question-tag">厨房保养</span>
+                    </div>
+                </div>
+
+                <div class="question-bubble purple" onclick="location.href='community-updates.html#cheese'">
+                    <div class="question-icon">🧀</div>
+                    <div class="question-text">当地奶酪怎么吃更地道？</div>
+                    <div class="question-tags">
+                        <span class="question-tag">挪威特产</span>
+                        <span class="question-tag">美食体验</span>
+                    </div>
+                </div>
+
+                <div class="question-bubble orange" onclick="location.href='community-updates.html#ingredients'">
+                    <div class="question-icon">🍲</div>
+                    <div class="question-text">挪威当地特色食材操作指南？</div>
+                    <div class="question-tags">
+                        <span class="question-tag">食材指南</span>
+                        <span class="question-tag">中西结合</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 答案模态框 -->
+    <div class="answer-modal" id="answerModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">问题详解</h3>
+                <button class="close-button" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-answer" id="modalAnswer">
+                答案内容...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时显示用户位置
+        window.addEventListener('load', function() {
+            const savedLocation = localStorage.getItem('userLocation');
+            const locationInfo = document.getElementById('locationInfo');
+            
+            if (savedLocation) {
+                const locationNames = {
+                    'norway': '挪威',
+                    'sweden': '瑞典',
+                    'denmark': '丹麦',
+                    'finland': '芬兰',
+                    'iceland': '冰岛',
+                    'germany': '德国',
+                    'netherlands': '荷兰',
+                    'france': '法国',
+                    'uk': '英国',
+                    'other': '欧洲'
+                };
+                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            }
+        });
+
+        const questionAnswers = {
+            'induction-cooker': {
+                title: '怎么使用电磁炉？',
+                answer: `
+                    <h4>电磁炉使用指南：</h4>
+                    <p><strong>1. 检查锅具：</strong>确保使用的是适合电磁炉的锅具（底部有磁性标志）。</p>
+                    <p><strong>2. 放置锅具：</strong>将锅具平稳放在电磁炉中央的加热区域。</p>
+                    <p><strong>3. 插电开机：</strong>连接电源，按下电源键启动。</p>
+                    <p><strong>4. 调节火力：</strong>使用"+""-"键或旋钮调节功率，一般从低档开始。</p>
+                    <p><strong>5. 安全提醒：</strong></p>
+                    <ul>
+                        <li>使用后记得关闭电源</li>
+                        <li>不要在电磁炉上放置磁性物品</li>
+                        <li>保持电磁炉表面清洁</li>
+                        <li>避免空烧，可能损坏电磁炉</li>
+                    </ul>
+                    <p><em>挪威的电磁炉通常功率较高，建议新手从中低档开始使用。</em></p>
+                `
+            },
+            'induction-dishes': {
+                title: '用电磁炉做什么菜比较好？',
+                answer: `
+                    <h4>适合电磁炉的中式菜品：</h4>
+                    <p><strong>🍜 汤类：</strong></p>
+                    <ul>
+                        <li>番茄鸡蛋汤 - 简单快手，营养丰富</li>
+                        <li>冬瓜排骨汤 - 温控精准，炖煮效果好</li>
+                        <li>青菜豆腐汤 - 清淡健康，适合日常</li>
+                    </ul>
+                    
+                    <p><strong>🍳 炒菜类：</strong></p>
+                    <ul>
+                        <li>蒜蓉小白菜 - 火力可控，不易焦糊</li>
+                        <li>番茄炒蛋 - 经典家常，容易掌握</li>
+                        <li>土豆丝 - 练习火候的好选择</li>
+                    </ul>
+                    
+                    <p><strong>🍲 焖煮类：</strong></p>
+                    <ul>
+                        <li>红烧肉 - 温度恒定，肉质软烂</li>
+                        <li>白米粥 - 自动保温，省心省力</li>
+                        <li>蒸蛋羹 - 温度精确，口感嫩滑</li>
+                    </ul>
+                    
+                    <p><em>建议：电磁炉特别适合需要精确温控的菜品，避免做需要大火爆炒的菜。</em></p>
+                `
+            },
+            'frozen-salmon': {
+                title: '怎么处理冷冻三文鱼？',
+                answer: `
+                    <h4>冷冻三文鱼处理步骤：</h4>
+                    <p><strong>🧊 解冻方法：</strong></p>
+                    <ul>
+                        <li><strong>冷藏解冻：</strong>提前8-12小时放入冰箱冷藏室（推荐）</li>
+                        <li><strong>流水解冻：</strong>密封后用冷水冲洗30-60分钟</li>
+                        <li><strong>微波解冻：</strong>使用解冻档，每次30秒翻面</li>
+                    </ul>
+                    
+                    <p><strong>🔪 处理步骤：</strong></p>
+                    <ol>
+                        <li>用厨房纸吸干表面水分</li>
+                        <li>检查是否有鱼鳞，用刀背刮除</li>
+                        <li>去除鱼骨（如有）</li>
+                        <li>按需要切块或切片</li>
+                    </ol>
+                    
+                    <p><strong>🍳 烹饪建议：</strong></p>
+                    <ul>
+                        <li><strong>煎制：</strong>平底锅少油，皮面朝下先煎</li>
+                        <li><strong>烤制：</strong>200°C烤箱，12-15分钟</li>
+                        <li><strong>蒸制：</strong>蒸锅8-10分钟，保持鲜嫩</li>
+                    </ul>
+                    
+                    <p><strong>⚠️ 注意事项：</strong></p>
+                    <ul>
+                        <li>解冻后不要重复冷冻</li>
+                        <li>新鲜度不确定时建议充分加热</li>
+                        <li>挪威三文鱼品质较高，简单调味即可</li>
+                    </ul>
+                `
+            },
+            'chinese-ingredients': {
+                title: '哪里买中式调料和食材？',
+                answer: `
+                    <h4>挪威中式食材购买指南：</h4>
+                    <p><strong>🏪 亚洲超市：</strong></p>
+                    <ul>
+                        <li><strong>奥斯陆：</strong>Grønland地区有多家亚洲超市</li>
+                        <li><strong>卑尔根：</strong>市中心和学生区附近</li>
+                        <li><strong>特隆赫姆：</strong>NTNU附近的Asian Market</li>
+                        <li><strong>斯塔万格：</strong>市中心的Oriental Food</li>
+                    </ul>
+                    
+                    <p><strong>🛒 大型超市：</strong></p>
+                    <ul>
+                        <li><strong>REMA 1000：</strong>基础亚洲调料，价格实惠</li>
+                        <li><strong>ICA：</strong>种类较多，质量不错</li>
+                        <li><strong>Coop：</strong>有机亚洲食品较多</li>
+                    </ul>
+                    
+                    <p><strong>🌐 网上购买：</strong></p>
+                    <ul>
+                        <li><strong>AsianFoodLovers.no：</strong>专业亚洲食材网站</li>
+                        <li><strong>Normal.no：</strong>部分亚洲调料</li>
+                        <li><strong>亚马逊德国：</strong>更多选择，但需要等待</li>
+                    </ul>
+                    
+                    <p><strong>💡 购买建议：</strong></p>
+                    <ul>
+                        <li>生抽、老抽、蚝油等基础调料优先购买</li>
+                        <li>八角、花椒等香料可网购</li>
+                        <li>新鲜蔬菜建议本地超市购买</li>
+                        <li>关注亚洲超市的打折信息</li>
+                    </ul>
+                `
+            },
+            'kitchen-safety': {
+                title: '厨房安全注意事项',
+                answer: `
+                    <h4>厨房安全完全指南：</h4>
+                    <p><strong>🔥 火源安全：</strong></p>
+                    <ul>
+                        <li>离开厨房前务必关闭所有火源</li>
+                        <li>保持电磁炉、烤箱周围整洁</li>
+                        <li>准备灭火毯，了解其使用方法</li>
+                        <li>油锅起火时盖锅盖，不要用水扑灭</li>
+                    </ul>
+                    
+                    <p><strong>🔪 刀具安全：</strong></p>
+                    <ul>
+                        <li>使用锋利的刀具，钝刀更容易滑脱</li>
+                        <li>切菜时手指要弯曲，指关节靠刀面</li>
+                        <li>刀具使用后立即清洗并妥善收纳</li>
+                        <li>不要尝试接住掉落的刀具</li>
+                    </ul>
+                    
+                    <p><strong>⚡ 电器安全：</strong></p>
+                    <ul>
+                        <li>湿手不要触摸电器开关</li>
+                        <li>定期检查电线是否破损</li>
+                        <li>不要超负荷使用插座</li>
+                        <li>使用后拔掉小电器插头</li>
+                    </ul>
+                    
+                    <p><strong>🧽 卫生安全：</strong></p>
+                    <ul>
+                        <li>生熟食品分开处理和存放</li>
+                        <li>定期更换洗碗布和抹布</li>
+                        <li>肉类要充分加热至安全温度</li>
+                        <li>及时清理溅洒，防止滑倒</li>
+                    </ul>
+                    
+                    <p><strong>🚨 紧急情况：</strong></p>
+                    <ul>
+                        <li>挪威紧急电话：112（消防）</li>
+                        <li>轻微烫伤立即用冷水冲洗</li>
+                        <li>严重伤害不要移动伤者</li>
+                        <li>保持冷静，及时求助</li>
+                    </ul>
+                `
+            },
+            'budget-cooking': {
+                title: '如何省钱做好吃的菜？',
+                answer: `
+                    <h4>学生省钱做菜攻略：</h4>
+                    <p><strong>💰 采购技巧：</strong></p>
+                    <ul>
+                        <li>关注超市打折时间（通常下午晚些时候）</li>
+                        <li>购买当季蔬菜，价格更便宜</li>
+                        <li>选择冷冻蔬菜，营养不减价格低</li>
+                        <li>大包装分装冷冻，单价更优惠</li>
+                    </ul>
+                    
+                    <p><strong>🥘 省钱菜品推荐：</strong></p>
+                    <ul>
+                        <li><strong>土豆料理：</strong>土豆丝、土豆泥、炖土豆</li>
+                        <li><strong>蛋类菜品：</strong>番茄炒蛋、韭菜炒蛋、蒸蛋羹</li>
+                        <li><strong>豆腐菜：</strong>麻婆豆腐、家常豆腐、豆腐汤</li>
+                        <li><strong>面食：</strong>焖面、炒面、汤面</li>
+                    </ul>
+                    
+                    <p><strong>🍲 一锅出料理：</strong></p>
+                    <ul>
+                        <li>电饭煲焖饭（加菜加肉一锅搞定）</li>
+                        <li>杂菜汤（剩菜利用，营养丰富）</li>
+                        <li>火锅（蔬菜肉类随意搭配）</li>
+                        <li>炖菜（土豆胡萝卜豆角大乱炖）</li>
+                    </ul>
+                    
+                    <p><strong>📦 食材利用技巧：</strong></p>
+                    <ul>
+                        <li>剩米饭做蛋炒饭或粥</li>
+                        <li>蔬菜根茎叶全利用</li>
+                        <li>肉骨头煮汤做高汤</li>
+                        <li>过季水果做果酱或甜品</li>
+                    </ul>
+                    
+                    <p><strong>💡 省钱小贴士：</strong></p>
+                    <ul>
+                        <li>学会几道"万能"调味法</li>
+                        <li>每周制定采购清单</li>
+                        <li>与室友拼购大包装食材</li>
+                        <li>自制调料包，避免买现成的</li>
+                    </ul>
+                `
+            }
+        };
+
+        function showAnswer(questionId) {
+            const modal = document.getElementById('answerModal');
+            const title = document.getElementById('modalTitle');
+            const answer = document.getElementById('modalAnswer');
+            
+            const questionData = questionAnswers[questionId];
+            if (questionData) {
+                title.textContent = questionData.title;
+                answer.innerHTML = questionData.answer;
+                modal.style.display = 'flex';
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('answerModal');
+            modal.style.display = 'none';
+        }
+
+        // 点击模态框背景关闭
+        document.getElementById('answerModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        // ESC键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>

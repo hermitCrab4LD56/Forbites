@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>家乡菜单 - 四时</title>
+    <style>
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('../assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        html, body, * {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
+        
+        :root {
+            --primary-red: #60281E;
+            --secondary-gold: #DAA520;
+            --accent-jade: #478778;
+            --warm-beige: #F5F5DC;
+            --ink-black: #2C2C2C;
+            --paper-white: #FEFEFE;
+            --border-gray: #D3D3D3;
+            --shadow-dark: rgba(44, 44, 44, 0.2);
+            --light-jade: rgba(71, 135, 120, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-white) 100%);
+            color: var(--ink-black);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-jade);
+        }
+
+        .back-button:hover {
+            background: transparent;
+            color: var(--accent-jade);
+            transform: translateY(-2px);
+        }
+
+        .location-info {
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .qingtuan-icon {
+            background: url('../assets/1.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .qingtuan-icon::after {
+            content: none !important;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-dark);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        .form-section {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--ink-black);
+            margin-bottom: 0.8rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--border-gray);
+            border-radius: 8px;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--secondary-gold);
+            box-shadow: 0 0 8px rgba(218, 165, 32, 0.3);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .ingredients-container {
+            background: var(--light-jade);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .ingredients-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .ingredient-tag {
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            user-select: none;
+        }
+
+        .ingredient-tag button {
+            background: var(--paper-white);
+            color: var(--accent-jade);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .add-ingredient {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .add-button {
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            border: none;
+            border-radius: 8px;
+            padding: 0 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 500;
+        }
+
+        .add-button:hover {
+            background: var(--ink-black);
+        }
+
+        .submit-button {
+            background: var(--primary-red);
+            color: var(--paper-white);
+            border: none;
+            border-radius: 12px;
+            padding: 1.2rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            font-family: 'Noto Serif SC', serif;
+            width: 100%;
+        }
+
+        .submit-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 6px 6px 16px var(--shadow-dark);
+        }
+
+        .recipe-cards {
+            margin-top: 3rem;
+        }
+
+        .recipe-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .recipe-card {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            position: relative;
+        }
+
+        .recipe-card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-jade);
+            margin-bottom: 1rem;
+        }
+
+        .recipe-card-ingredients {
+            margin-bottom: 1.5rem;
+        }
+
+        .recipe-card-ingredients-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary-red);
+            margin-bottom: 0.8rem;
+        }
+
+        .recipe-card-steps {
+            line-height: 1.6;
+        }
+
+        .recipe-card-steps-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: var(--primary-red);
+            margin-bottom: 0.8rem;
+        }
+
+        .delete-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--primary-red);
+            color: var(--paper-white);
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .delete-button:hover {
+            background: var(--ink-black);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .add-ingredient {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="cooking.html" class="back-button">← 返回上一页</a>
+            <div class="location-info" id="locationInfo">挪威</div>
+        </div>
+
+        <div class="title-section">
+            <div class="qingtuan-icon"></div>
+            <h1 class="page-title">家乡菜单</h1>
+            <p class="page-subtitle">记录您最爱的家乡美食与做法</p>
+        </div>
+
+        <div class="form-section">
+            <form id="recipeForm">
+                <div class="form-group">
+                    <label for="recipeName" class="form-label">菜名</label>
+                    <input type="text" id="recipeName" class="form-input" placeholder="例如：外婆红烧肉" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">食材</label>
+                    <div class="ingredients-container">
+                        <div class="ingredients-list" id="ingredientsList">
+                            <!-- 食材标签将在这里动态显示 -->
+                        </div>
+                        <div class="add-ingredient">
+                            <input type="text" id="newIngredient" class="form-input" placeholder="添加食材（如：五花肉500克）">
+                            <button type="button" class="add-button" onclick="addIngredient()">添加</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="recipeSteps" class="form-label">做法步骤</label>
+                    <textarea id="recipeSteps" class="form-input form-textarea" placeholder="详细描述菜品的制作步骤..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-button">保存菜谱</button>
+            </form>
+        </div>
+
+        <div class="recipe-cards">
+            <h2 class="recipe-title">我的家乡菜谱</h2>
+            <div id="recipeCardsContainer">
+                <!-- 菜谱卡片将在这里动态显示 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="api-utils.js"></script>
+    <script>
+        // 页面加载时显示用户位置
+        window.addEventListener('load', async function() {
+            const savedLocation = await api.getUserLocation();
+            const locationInfo = document.getElementById('locationInfo');
+            
+            if (savedLocation) {
+                const locationNames = {
+                    'norway': '挪威',
+                    'sweden': '瑞典',
+                    'denmark': '丹麦',
+                    'finland': '芬兰',
+                    'iceland': '冰岛',
+                    'germany': '德国',
+                    'netherlands': '荷兰',
+                    'france': '法国',
+                    'uk': '英国',
+                    'other': '欧洲'
+                };
+                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            }
+            
+            // 加载保存的菜谱
+            await loadRecipes();
+        });
+
+        // 定义一个空的食材数组
+        let ingredients = [];
+
+        // 添加食材
+        function addIngredient() {
+            const ingredientInput = document.getElementById('newIngredient');
+            const ingredient = ingredientInput.value.trim();
+            
+            if (ingredient) {
+                ingredients.push(ingredient);
+                updateIngredientsUI();
+                ingredientInput.value = '';
+            }
+        }
+
+        // 移除食材
+        function removeIngredient(index) {
+            ingredients.splice(index, 1);
+            updateIngredientsUI();
+        }
+
+        // 更新食材界面
+        function updateIngredientsUI() {
+            const ingredientsList = document.getElementById('ingredientsList');
+            ingredientsList.innerHTML = '';
+            
+            ingredients.forEach((ingredient, index) => {
+                const tag = document.createElement('div');
+                tag.className = 'ingredient-tag';
+                tag.innerHTML = `
+                    ${ingredient}
+                    <button type="button" onclick="removeIngredient(${index})">×</button>
+                `;
+                ingredientsList.appendChild(tag);
+            });
+        }
+
+        // 表单提交处理
+        document.getElementById('recipeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const recipeName = document.getElementById('recipeName').value.trim();
+            const recipeSteps = document.getElementById('recipeSteps').value.trim();
+            
+            if (!recipeName || !recipeSteps || ingredients.length === 0) {
+                alert('请填写所有必要信息，并至少添加一种食材！');
+                return;
+            }
+            
+            // 创建新菜谱
+            const recipe = {
+                id: Date.now(),
+                name: recipeName,
+                ingredients: [...ingredients],
+                steps: recipeSteps
+            };
+            
+            // 保存菜谱
+            saveRecipe(recipe);
+            
+            // 重置表单
+            document.getElementById('recipeForm').reset();
+            ingredients = [];
+            updateIngredientsUI();
+        });
+
+        // 保存菜谱到数据库
+        async function saveRecipe(recipe) {
+            try {
+                await api.createHometownRecipe(recipe);
+                // 加载保存的菜谱
+                await loadRecipes();
+            } catch (error) {
+                alert('保存失败，请重试');
+                console.error('保存菜谱失败:', error);
+            }
+        }
+
+        // 加载菜谱
+        async function loadRecipes() {
+            try {
+                const recipes = await api.getHometownRecipes();
+                const container = document.getElementById('recipeCardsContainer');
+                
+                if (recipes.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: var(--accent-jade);">您还没有添加任何家乡菜谱，开始记录您的第一道菜吧！</p>';
+                    return;
+                }
+                
+                container.innerHTML = '';
+                
+                recipes.forEach(recipe => {
+                    const card = document.createElement('div');
+                    card.className = 'recipe-card';
+                    card.innerHTML = `
+                        <h3 class="recipe-card-title">${recipe.name}</h3>
+                        <button class="delete-button" onclick="deleteRecipe(${recipe.id})">×</button>
+                        <div class="recipe-card-ingredients">
+                            <div class="recipe-card-ingredients-title">食材</div>
+                            <div>${recipe.ingredients.join('、')}</div>
+                            </div>
+                        <div class="recipe-card-steps">
+                            <div class="recipe-card-steps-title">做法</div>
+                            <div>${recipe.steps}</div>
+                        </div>
+                    `;
+                    container.appendChild(card);
+                });
+            } catch (error) {
+                console.error('加载菜谱失败:', error);
+                const container = document.getElementById('recipeCardsContainer');
+                container.innerHTML = '<p style="text-align: center; color: var(--accent-jade);">加载失败，请检查网络连接</p>';
+            }
+        }
+
+        // 删除菜谱
+        async function deleteRecipe(id) {
+            if (confirm('确定要删除这个菜谱吗？')) {
+                try {
+                    await api.deleteHometownRecipe(id);
+                    // 重新加载菜谱
+                    await loadRecipes();
+                } catch (error) {
+                    alert('删除失败，请重试');
+                    console.error('删除菜谱失败:', error);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

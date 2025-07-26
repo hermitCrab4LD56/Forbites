@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社区更新 - 四时</title>
+    <style>
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('../assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        html, body, * {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
+        
+        :root {
+            --primary-red: #60281E;
+            --secondary-gold: #DAA520;
+            --accent-jade: #478778;
+            --warm-beige: #F5F5DC;
+            --ink-black: #2C2C2C;
+            --paper-white: #FEFEFE;
+            --border-gray: #D3D3D3;
+            --shadow-dark: rgba(44, 44, 44, 0.2);
+            --light-jade: rgba(71, 135, 120, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-white) 100%);
+            color: var(--ink-black);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-jade);
+        }
+
+        .back-button:hover {
+            background: transparent;
+            color: var(--accent-jade);
+            transform: translateY(-2px);
+        }
+
+        .location-info {
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .mooncake-icon {
+            background: url('../assets/2.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .mooncake-icon::after {
+            content: none !important;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-dark);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        .article-container {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .article-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .article-subtitle {
+            font-size: 1.3rem;
+            color: var(--accent-jade);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .article-image {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            margin: 0 auto 2rem;
+            display: block;
+            border-radius: 12px;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .article-section {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-jade);
+            margin-bottom: 1.2rem;
+            border-bottom: 2px solid var(--border-gray);
+            padding-bottom: 0.5rem;
+        }
+
+        .section-content {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+        }
+
+        .tip-box {
+            background: var(--light-jade);
+            border-left: 4px solid var(--accent-jade);
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tip-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-jade);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .tip-content {
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .related-articles {
+            margin-top: 3rem;
+        }
+
+        .related-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .related-card {
+            background: var(--paper-white);
+            border: 2px solid var(--border-gray);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .related-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .related-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .related-content {
+            padding: 1.2rem;
+        }
+
+        .related-card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--accent-jade);
+            margin-bottom: 0.8rem;
+        }
+
+        .related-card-description {
+            font-size: 0.9rem;
+            line-height: 1.4;
+            color: var(--ink-black);
+        }
+
+        .step-list {
+            counter-reset: step-counter;
+            list-style-type: none;
+            margin-left: 1rem;
+        }
+
+        .step-item {
+            position: relative;
+            padding-left: 2.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .step-item::before {
+            counter-increment: step-counter;
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 1.8rem;
+            height: 1.8rem;
+            background-color: var(--accent-jade);
+            color: var(--paper-white);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .article-title {
+                font-size: 1.8rem;
+            }
+            
+            .related-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="community.html" class="back-button">← 返回社区</a>
+            <div class="location-info" id="locationInfo">挪威</div>
+        </div>
+
+        <div class="title-section">
+            <div class="mooncake-icon"></div>
+            <h1 class="page-title">社区内容更新</h1>
+            <p class="page-subtitle">最新添加的实用指南</p>
+        </div>
+
+        <!-- 文章1：电磁炉油渍清理 -->
+        <div class="article-container">
+            <h2 class="article-title">电磁炉油渍清理指南</h2>
+            <h3 class="article-subtitle">保持厨房清洁的实用方法</h3>
+            <img src="https://cdn.pixabay.com/photo/2020/10/24/07/59/fortune-cookie-5680728_150.jpg" alt="电磁炉油渍清理" class="article-image">
+
+            <div class="article-section">
+                <h4 class="section-title">电磁炉油渍的常见问题</h4>
+                <p class="section-content">
+                    在挪威的留学生活中，电磁炉是最常见的烹饪工具。中式炒菜往往会产生油烟和溅油，长期不清理会导致电磁炉表面积累顽固油渍，不仅影响美观，还可能影响电磁炉的使用寿命和加热效率。
+                </p>
+                <p class="section-content">
+                    大多数宿舍和公寓都提供基础清洁工具，但针对电磁炉油渍的特殊清洁方法却鲜为人知。本指南将介绍几种高效的清洁方式，帮助您轻松去除顽固油渍。
+                </p>
+            </div>
+
+            <div class="article-section">
+                <h4 class="section-title">有效的清洁方法</h4>
+                <ol class="step-list">
+                    <li class="step-item">
+                        <strong>柠檬汁和盐的组合</strong>：将半个柠檬的汁液挤在有油渍的区域，撒上一层细盐，静置10分钟后用湿布擦拭。柠檬的酸性有助于分解油脂，而盐则提供温和的磨砂作用。
+                    </li>
+                    <li class="step-item">
+                        <strong>小苏打和白醋混合物</strong>：制作小苏打糊（小苏打与少量水混合），涂抹在油渍上，然后喷洒白醋。会产生泡沫反应，帮助分解顽固油渍。等待5分钟后用湿布擦拭干净。
+                    </li>
+                    <li class="step-item">
+                        <strong>专业玻璃陶瓷清洁剂</strong>：挪威超市（如Kiwi、Rema 1000、Meny）都有售卖专门用于电磁炉清洁的产品，挪威语名称通常为"Platetopp rengjøringsmiddel"，按照产品说明使用效果最佳。
+                    </li>
+                </ol>
+
+                <div class="tip-box">
+                    <div class="tip-title">
+                        <span>💡</span>
+                        <span>重要提示</span>
+                    </div>
+                    <div class="tip-content">
+                        永远不要在电磁炉仍然发热的状态下清洁，等待其完全冷却后再进行清理。也不要使用金属刮刀或粗糙的清洁工具，这可能会划伤电磁炉表面。
+                    </div>
+                </div>
+            </div>
+
+            <div class="article-section">
+                <h4 class="section-title">预防胜于治疗</h4>
+                <p class="section-content">
+                    除了定期清洁，以下预防措施也能有效减少油渍积累：
+                </p>
+                <ol class="step-list">
+                    <li class="step-item">
+                        使用防溅罩或锅盖在炒菜时防止油溅出。
+                    </li>
+                    <li class="step-item">
+                        每次使用后用湿布擦拭电磁炉表面，趁油渍还没有凝固时清理。
+                    </li>
+                    <li class="step-item">
+                        每周定期深度清洁一次，避免油渍积累变得难以去除。
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 文章2：奶酪吃法 -->
+        <div class="article-container">
+            <h2 class="article-title">挪威奶酪品尝指南</h2>
+            <h3 class="article-subtitle">探索北欧独特的奶酪文化</h3>
+            <img src="https://thedelicatediner.com/wp-content/uploads/2017/07/yarevallyoil27208-scaled.jpg" alt="挪威奶酪" class="article-image">
+
+            <div class="article-section">
+                <h4 class="section-title">挪威奶酪的特色</h4>
+                <p class="section-content">
+                    挪威奶酪在北欧乳制品中占有重要地位，与常见的西欧奶酪相比，挪威奶酪通常有着独特的风味和使用方式。最具代表性的挪威奶酪包括布鲁诺斯特（Brunost，棕色山羊奶酪）、杰托斯特（Jarlsberg，类似瑞士奶酪）和诺克（Nøkkelost，带有香草籽的奶酪）。
+                </p>
+                <p class="section-content">
+                    对于初次尝试的中国留学生来说，这些奶酪的风味可能会很独特，特别是布鲁诺斯特略带焦糖甜味的口感，可能需要一段时间适应。
+                </p>
+            </div>
+
+            <div class="article-section">
+                <h4 class="section-title">奶酪的本地吃法</h4>
+                <ol class="step-list">
+                    <li class="step-item">
+                        <strong>早餐面包搭配</strong>：使用特殊的挪威奶酪刨刀（ostehøvel）将奶酪切成薄片，铺在黑麦面包或全麦面包上。布鲁诺斯特通常与果酱一起食用，而普通白奶酪则可以配以黄瓜片和番茄。
+                    </li>
+                    <li class="step-item">
+                        <strong>奶酪融化在热食中</strong>：杰托斯特奶酪可以加入炖菜、焗烤食品或简单地融化在热土豆上，增添丰富的味道。
+                    </li>
+                    <li class="step-item">
+                        <strong>奶酪拼盘</strong>：周末时，挪威人喜欢准备奶酪拼盘，搭配新鲜水果、坚果和饼干享用，配以红酒或当地啤酒。
+                    </li>
+                </ol>
+
+                <div class="tip-box">
+                    <div class="tip-title">
+                        <span>💡</span>
+                        <span>文化小贴士</span>
+                    </div>
+                    <div class="tip-content">
+                        在挪威，奶酪通常不会像在中国那样加热后食用，而是以冷食形式直接享用。尝试地道的挪威早餐方式：在全麦面包上铺上黄油和奶酪薄片。
+                    </div>
+                </div>
+            </div>
+
+            <div class="article-section">
+                <h4 class="section-title">中西结合的创新吃法</h4>
+                <p class="section-content">
+                    对于想要尝试将挪威奶酪融入中式料理的同学，以下是一些创新尝试：
+                </p>
+                <ol class="step-list">
+                    <li class="step-item">
+                        将切碎的杰托斯特奶酪加入炒饭最后阶段，融化后增添奶香。
+                    </li>
+                    <li class="step-item">
+                        布鲁诺斯特奶酪可以切薄片加入火锅汤底，带来独特的甜咸口感。
+                    </li>
+                    <li class="step-item">
+                        普通白奶酪切碎后可以加入馅饼或饺子馅，创造奶香四溢的新口味。
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 文章3：当地食材指南 -->
+        <div class="article-container">
+            <h2 class="article-title">挪威特色食材使用指南</h2>
+            <h3 class="article-subtitle">用当地食材烹制中式美食</h3>
+            <img src="https://image.sciencenorway.no/2229476.webp?imageId=2229476&x=0.00&y=0.00&cropw=100.00&croph=100.00&width=960&height=644&format=jpg" alt="挪威特色食材" class="article-image">
+
+            <div class="article-section">
+                <h4 class="section-title">挪威常见特色食材</h4>
+                <p class="section-content">
+                    挪威作为北欧国家，有着丰富的海产品资源和独特的当地食材。留学生可以尝试使用这些当地食材替代中式烹饪中的传统食材，不仅能节省预算，还能创造出美味的融合料理。
+                </p>
+            </div>
+
+            <div class="article-section">
+                <h4 class="section-title">海鲜类食材</h4>
+                <ol class="step-list">
+                    <li class="step-item">
+                        <strong>挪威三文鱼（Laks）</strong>：挪威最著名的食材，鲜嫩多汁，可以用来替代中式菜谱中的各种鱼类。尝试制作三文鱼水煮鱼、三文鱼红烧或清蒸三文鱼头。挪威超市常有优惠的三文鱼块出售。
+                    </li>
+                    <li class="step-item">
+                        <strong>鳕鱼（Torsk）</strong>：肉质紧实的白肉鱼，适合替代中式菜谱中的龙利鱼或鲈鱼。特别适合做成酸菜鱼或者粉丝蒸鱼。
+                    </li>
+                    <li class="step-item">
+                        <strong>虾（Reker）</strong>：挪威北极虾价格实惠，可以直接购买已煮熟的冷冻虾，用来做虾仁炒菜、虾仁馅饺子或者虾仁蛋炒饭。
+                    </li>
+                </ol>
+
+                <div class="tip-box">
+                    <div class="tip-title">
+                        <span>💡</span>
+                        <span>购买建议</span>
+                    </div>
+                    <div class="tip-content">
+                        挪威超市的海鲜通常在周三和周五会有特价活动。购买时注意查看"Tilbud"（特价）标签。冻鱼比新鲜鱼便宜很多，但质量依然很好。
+                    </div>
+                </div>
+            </div>
+
+            <div class="article-section">
+                <h4 class="section-title">肉类和蔬菜</h4>
+                <ol class="step-list">
+                    <li class="step-item">
+                        <strong>驯鹿肉（Reinsdyrkjøtt）</strong>：北挪威特色肉类，味道类似牛肉但更加鲜美，脂肪含量低。可以用来制作中式红烧或者炖菜，替代牛肉或羊肉。
+                    </li>
+                    <li class="step-item">
+                        <strong>羊肉（Lammekjøtt）</strong>：挪威羊肉品质极佳，适合做成羊肉泡馍、羊肉煲或者手抓羊肉。
+                    </li>
+                    <li class="step-item">
+                        <strong>白萝卜（Kålrot）</strong>：挪威特色根茎蔬菜，口感和中国白萝卜相似，可以用于煲汤或者腌制成萝卜干。
+                    </li>
+                    <li class="step-item">
+                        <strong>森林蘑菇（Skogsopp）</strong>：挪威森林中的野生蘑菇种类繁多，秋季可以尝试自己采集或在市场购买，用来做蘑菇炒肉或蘑菇汤。
+                    </li>
+                </ol>
+            </div>
+
+            <div class="article-section">
+                <h4 class="section-title">调味品和替代品</h4>
+                <p class="section-content">
+                    一些常见的中式调味料在挪威可能难以找到，以下是一些有用的替代方案：
+                </p>
+                <ol class="step-list">
+                    <li class="step-item">
+                        用盐和糖混合替代味精，比例约为3:1。
+                    </li>
+                    <li class="step-item">
+                        用苹果醋加少量糖替代米醋。
+                    </li>
+                    <li class="step-item">
+                        挪威超市的亚洲食品区通常有售卖酱油和其他基础亚洲调味料。
+                    </li>
+                    <li class="step-item">
+                        寻找当地的亚洲超市完善你的中式厨房。奥斯陆、特隆赫姆和卑尔根的亚洲超市选择较多。
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- 相关文章推荐 -->
+        <div class="related-articles">
+            <h3 class="related-title">更多社区内容</h3>
+            <div class="related-grid">
+                <a href="community.html" class="related-card">
+                    <img src="https://www.nordicware.com/wp-content/uploads/2021/04/01740_ebelskiver_iron_stovetop_07_e__84865.1617722773.1280.1280.jpg" alt="电磁炉使用技巧" class="related-image">
+                    <div class="related-content">
+                        <h4 class="related-card-title">电磁炉使用技巧</h4>
+                        <p class="related-card-description">学习如何充分利用电磁炉烹饪各类中式菜肴</p>
+                    </div>
+                </a>
+                
+                <a href="community.html" class="related-card">
+                    <img src="https://redhousespice.com/wp-content/uploads/2024/09/pork-rib-soup-with-corn-carrot-5-scaled.jpg" alt="电磁炉适合的菜品" class="related-image">
+                    <div class="related-content">
+                        <h4 class="related-card-title">电磁炉适合的菜品</h4>
+                        <p class="related-card-description">发现哪些中式菜肴最适合在电磁炉上烹饪</p>
+                    </div>
+                </a>
+                
+                <a href="community.html" class="related-card">
+                    <img src="https://onolicioushawaii.com/wp-content/uploads/2022/01/pork-rib-soup-1.jpg" alt="冷冻三文鱼处理方法" class="related-image">
+                    <div class="related-content">
+                        <h4 class="related-card-title">冷冻三文鱼处理方法</h4>
+                        <p class="related-card-description">学习如何正确解冻和烹饪冷冻三文鱼</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时显示用户位置
+        window.addEventListener('load', function() {
+            const savedLocation = localStorage.getItem('userLocation');
+            const locationInfo = document.getElementById('locationInfo');
+            
+            if (savedLocation) {
+                const locationNames = {
+                    'norway': '挪威',
+                    'sweden': '瑞典',
+                    'denmark': '丹麦',
+                    'finland': '芬兰',
+                    'iceland': '冰岛',
+                    'germany': '德国',
+                    'netherlands': '荷兰',
+                    'france': '法国',
+                    'uk': '英国',
+                    'other': '欧洲'
+                };
+                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            }
+        });
+    </script>
+</body>
+</html>

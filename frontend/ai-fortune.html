@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>美食占卜 - 四时</title>
+    <style>
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('../assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        html, body, * {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
+        
+        :root {
+            --primary-red: #60281E;
+            --secondary-gold: #DAA520;
+            --accent-jade: #478778;
+            --warm-beige: #F5F5DC;
+            --ink-black: #2C2C2C;
+            --paper-white: #FEFEFE;
+            --border-gray: #D3D3D3;
+            --shadow-dark: rgba(44, 44, 44, 0.2);
+            --mystic-purple: #8E44AD;
+            --mystic-blue: #3498DB;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-white) 100%);
+            color: var(--ink-black);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+        }
+
+        .back-button {
+            padding: 0.8rem 1.5rem;
+            background: var(--accent-jade);
+            color: var(--paper-white);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid var(--accent-jade);
+        }
+
+        .back-button:hover {
+            background: transparent;
+            color: var(--accent-jade);
+            transform: translateY(-2px);
+        }
+
+        .location-info {
+            background: var(--secondary-gold);
+            color: var(--paper-white);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .qingtuan-icon {
+            background: url('../assets/1.png') no-repeat center center / contain !important;
+            border-radius: 0;
+            position: relative;
+        }
+        .qingtuan-icon::after {
+            content: none !important;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px var(--shadow-dark);
+        }
+
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--accent-jade);
+            font-weight: 400;
+            margin-bottom: 2rem;
+        }
+
+        .fortune-section {
+            background: var(--paper-white);
+            border: 3px solid var(--border-gray);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fortune-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: linear-gradient(90deg, var(--primary-red), var(--secondary-gold), var(--mystic-purple), var(--accent-jade), var(--mystic-blue));
+            border-radius: 13px 13px 0 0;
+        }
+
+        .fortune-cards {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin: 3rem 0;
+            perspective: 1000px;
+        }
+
+        .fortune-card {
+            width: 180px;
+            height: 280px;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s ease;
+            cursor: pointer;
+        }
+
+        .fortune-card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px var(--shadow-dark);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .card-back {
+            background: linear-gradient(45deg, #8B0000, var(--primary-red));
+            border: 5px solid var(--secondary-gold);
+            font-size: 3rem;
+            color: var(--paper-white);
+        }
+
+        .card-front {
+            background: linear-gradient(135deg, #F9F0FF, #E6F7FF);
+            border: 5px solid var(--secondary-gold);
+            transform: rotateY(180deg);
+        }
+
+        .card-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            color: var(--mystic-purple);
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--mystic-purple);
+        }
+
+        .card-text {
+            font-size: 0.9rem;
+            color: var(--ink-black);
+        }
+
+        .instruction {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: var(--mystic-purple);
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        .recipe-section {
+            margin-top: 2rem;
+            display: none;
+            transition: all 0.8s ease;
+        }
+
+        .recipe-section.visible {
+            display: block;
+        }
+
+        .recipe-title {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        .recipe-image {
+            width: 100%;
+            max-width: 400px;
+            height: 250px;
+            border-radius: 12px;
+            margin: 0 auto 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            background: linear-gradient(135deg, #90EE90 0%, #228B22 100%);
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+        }
+
+        .recipe-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+            color: var(--ink-black);
+            text-align: center;
+        }
+
+        .recipe-steps {
+            background: rgba(71, 135, 120, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .steps-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent-jade);
+            margin-bottom: 1.5rem;
+        }
+
+        .steps-list {
+            list-style: none;
+        }
+
+        .step-item {
+            margin-bottom: 1.2rem;
+            display: flex;
+            gap: 1rem;
+        }
+
+        .step-number {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--primary-red);
+            min-width: 30px;
+        }
+
+        .step-text {
+            font-size: 1.1rem;
+            line-height: 1.5;
+        }
+
+        .fortune-message {
+            text-align: center;
+            margin: 2rem 0;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            font-style: italic;
+            color: var(--mystic-purple);
+        }
+
+        .retry-button {
+            background: var(--primary-red);
+            color: var(--paper-white);
+            border: none;
+            border-radius: 12px;
+            padding: 1.2rem 2.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            font-family: 'Noto Serif SC', serif;
+            margin: 2rem auto;
+            display: block;
+        }
+
+        .retry-button:hover {
+            transform: translateY(-4px);
+            box-shadow: 6px 6px 16px var(--shadow-dark);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .fortune-cards {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <a href="cooking.html" class="back-button">← 返回上一页</a>
+            <div class="location-info" id="locationInfo">挪威</div>
+        </div>
+
+        <div class="title-section">
+            <div class="qingtuan-icon"></div>
+            <h1 class="page-title">今日美食占卜</h1>
+            <p class="page-subtitle">让命运之手为您推荐今日菜单！翻全三张有惊喜噢！</p>
+        </div>
+
+        <div class="fortune-section">
+            <p class="instruction" id="instruction">点击三张卡片，揭示您的今日美食灵感</p>
+            
+            <div class="fortune-cards" id="fortuneCards">
+                <div class="fortune-card" onclick="flipCard(this, 0)">
+                    <div class="card-face card-back">?</div>
+                    <div class="card-face card-front">
+                        <div class="card-icon" id="icon1">🌶️</div>
+                        <div class="card-title" id="title1">今日宜辛辣</div>
+                        <div class="card-text" id="text1">辛辣的食物能激发您的创造力，今日尝试加入一点辣椒或姜片为菜肴增添活力</div>
+                    </div>
+                </div>
+                
+                <div class="fortune-card" onclick="flipCard(this, 1)">
+                    <div class="card-face card-back">?</div>
+                    <div class="card-face card-front">
+                        <div class="card-icon" id="icon2">🍯</div>
+                        <div class="card-title" id="title2">今日宜甜蜜</div>
+                        <div class="card-text" id="text2">一丝甜味能带来好心情，尝试在料理中加入少许蜂蜜或枫糖</div>
+                    </div>
+                </div>
+                
+                <div class="fortune-card" onclick="flipCard(this, 2)">
+                    <div class="card-face card-back">?</div>
+                    <div class="card-face card-front">
+                        <div class="card-icon" id="icon3">🌿</div>
+                        <div class="card-title" id="title3">今日宜清新</div>
+                        <div class="card-text" id="text3">新鲜香草能为您带来灵感，点缀些薄荷或罗勒叶吧</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="fortune-message" id="fortuneMessage"></div>
+
+            <div class="recipe-section" id="recipeSection">
+                <h2 class="recipe-title">秘制凉拌黄瓜</h2>
+                <div class="recipe-image">🥒</div>
+                <p class="recipe-description">这道清爽可口的凉拌黄瓜，融合了辛辣与甘甜，再点缀以新鲜香草，仿佛命中注定要成为今日的完美料理！</p>
+                
+                <div class="recipe-steps">
+                    <h3 class="steps-title">神秘步骤</h3>
+                    <ol class="steps-list">
+                        <li class="step-item">
+                            <div class="step-number">1.</div>
+                            <div class="step-text">黄瓜洗净后用刀背拍打，使其裂开以便更好地吸收调味料</div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">2.</div>
+                            <div class="step-text">切成小块，撒上一茶匙盐，静置10分钟使其出水</div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">3.</div>
+                            <div class="step-text">沥干水分，加入蒜末、辣椒片、少许蜂蜜</div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">4.</div>
+                            <div class="step-text">倒入香醋和芝麻油，撒上新鲜薄荷叶碎</div>
+                        </li>
+                        <li class="step-item">
+                            <div class="step-number">5.</div>
+                            <div class="step-text">轻轻拌匀，冷藏15分钟后享用</div>
+                        </li>
+                    </ol>
+                </div>
+                
+                <p class="fortune-message">星星告诉我，今天的你在品尝这道料理时，会有意想不到的灵感涌现！</p>
+            </div>
+            
+            <button class="retry-button" id="retryButton" style="display: none;">重新占卜</button>
+        </div>
+    </div>
+
+    <script>
+        // 页面加载时显示用户位置
+        window.addEventListener('load', function() {
+            const savedLocation = localStorage.getItem('userLocation');
+            const locationInfo = document.getElementById('locationInfo');
+            
+            if (savedLocation) {
+                const locationNames = {
+                    'norway': '挪威',
+                    'sweden': '瑞典',
+                    'denmark': '丹麦',
+                    'finland': '芬兰',
+                    'iceland': '冰岛',
+                    'germany': '德国',
+                    'netherlands': '荷兰',
+                    'france': '法国',
+                    'uk': '英国',
+                    'other': '欧洲'
+                };
+                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            }
+        });
+
+        // 卡片内容数据
+        const cardData = [
+            // 第一张卡（味道）
+            [
+                { icon: '🌶️', title: '今日宜辛辣', text: '辛辣的食物能激发您的创造力，今日尝试加入一点辣椒或姜片为菜肴增添活力' },
+                { icon: '🍯', title: '今日宜甜蜜', text: '一丝甜味能带来好心情，尝试在料理中加入少许蜂蜜或枫糖' },
+                { icon: '🧂', title: '今日宜清淡', text: '简单的盐味能让您更专注，减少调味料，享受食材本身的滋味' },
+                { icon: '🥃', title: '今日宜醇厚', text: '浓郁的滋味能带来满足感，尝试炖煮或慢炖的烹饪方式' }
+            ],
+            // 第二张卡（烹饪方式）
+            [
+                { icon: '🔥', title: '今日宜爆炒', text: '快速翻炒能为您带来生活的热情，尝试用大火快速烹饪' },
+                { icon: '💨', title: '今日宜蒸煮', text: '蒸煮食物能保留营养，让您的身体感受到滋养' },
+                { icon: '🍲', title: '今日宜炖煮', text: '慢炖的过程能让您放慢生活节奏，感受等待的美好' },
+                { icon: '🥗', title: '今日宜凉拌', text: '凉拌料理能为您带来清新感受，尝试不加热的烹饪方式' }
+            ],
+            // 第三张卡（创意点缀）
+            [
+                { icon: '🌿', title: '今日宜清新', text: '新鲜香草能为您带来灵感，点缀些薄荷或罗勒叶吧' },
+                { icon: '🍋', title: '今日宜酸味', text: '一点酸味能提升料理层次，挤些柠檬汁或加点醋试试看' },
+                { icon: '🌰', title: '今日宜坚果', text: '坚果能增添口感变化，撒些杏仁或核桃碎吧' },
+                { icon: '🍷', title: '今日宜酒香', text: '一点酒香能提升料理格调，试试加入一点料酒或红酒' }
+            ]
+        ];
+
+        // 菜谱数据
+        const recipes = [
+            {
+                title: '秘制凉拌黄瓜',
+                image: '🥒',
+                description: '这道清爽可口的凉拌黄瓜，融合了辛辣与甘甜，再点缀以新鲜香草，仿佛命中注定要成为今日的完美料理！',
+                steps: [
+                    '黄瓜洗净后用刀背拍打，使其裂开以便更好地吸收调味料',
+                    '切成小块，撒上一茶匙盐，静置10分钟使其出水',
+                    '沥干水分，加入蒜末、辣椒片、少许蜂蜜',
+                    '倒入香醋和芝麻油，撒上新鲜薄荷叶碎',
+                    '轻轻拌匀，冷藏15分钟后享用'
+                ]
+            },
+            {
+                title: '神奇煎蛋咖啡',
+                image: '☕',
+                description: '你敢尝试这个奇妙组合吗？一滴醋加入咖啡，再配上完美煎蛋，这个异想天开的搭配可能会改变你对早餐的看法！',
+                steps: [
+                    '准备一杯现煮咖啡，加入一滴白醋（不要怀疑！）',
+                    '平底锅中放少许黄油，中小火融化',
+                    '打入一个鸡蛋，撒上少许盐和黑胡椒',
+                    '当蛋白凝固但蛋黄仍然柔软时，关火',
+                    '将煎蛋放在一片烤好的面包上，小口品尝咖啡与煎蛋的神奇组合'
+                ]
+            },
+            {
+                title: '双眼观世炒饭',
+                image: '🍚',
+                description: '闭上一只眼睛烹饪，你会发现不同的视角带来不同的味道！这道炒饭融合了甜、咸、酸三种风味，每一口都是惊喜。',
+                steps: [
+                    '准备隔夜米饭，用手将其分散成颗粒状',
+                    '热锅倒油，加入蛋液炒散',
+                    '闭上你的左眼（是的，真的闭上！），加入米饭翻炒均匀',
+                    '继续保持单眼状态，加入胡萝卜丁、青豌豆和玉米粒',
+                    '加入一小勺蜂蜜、几滴醋和适量盐调味',
+                    '出锅前撒上葱花，现在可以睁开双眼享用了'
+                ]
+            }
+        ];
+
+        // 随机选择卡片内容
+        function shuffleCards() {
+            const selectedCards = [0, 0, 0]; // 存储每张卡片选中的索引
+            
+            for (let i = 0; i < 3; i++) {
+                selectedCards[i] = Math.floor(Math.random() * 4); // 0-3的随机数
+                
+                // 更新卡片内容
+                document.getElementById(`icon${i+1}`).textContent = cardData[i][selectedCards[i]].icon;
+                document.getElementById(`title${i+1}`).textContent = cardData[i][selectedCards[i]].title;
+                document.getElementById(`text${i+1}`).textContent = cardData[i][selectedCards[i]].text;
+            }
+            
+            return selectedCards;
+        }
+
+        let flippedCount = 0;
+        const selectedCards = shuffleCards();
+        
+        function flipCard(card, index) {
+            if (!card.classList.contains('flipped')) {
+                card.classList.add('flipped');
+                flippedCount++;
+                
+                if (flippedCount === 3) {
+                    setTimeout(() => {
+                        // 显示配对的菜谱
+                        document.getElementById('fortuneMessage').textContent = '命运已经揭晓！这是您今天的幸运料理：';
+                        
+                        // 随机选择一个菜谱
+                        const selectedRecipe = recipes[Math.floor(Math.random() * recipes.length)];
+                        
+                        // 更新菜谱内容
+                        document.querySelector('.recipe-title').textContent = selectedRecipe.title;
+                        document.querySelector('.recipe-image').textContent = selectedRecipe.image;
+                        document.querySelector('.recipe-description').textContent = selectedRecipe.description;
+                        
+                        // 更新步骤
+                        const stepsList = document.querySelector('.steps-list');
+                        stepsList.innerHTML = '';
+                        selectedRecipe.steps.forEach((step, index) => {
+                            stepsList.innerHTML += `
+                                <li class="step-item">
+                                    <div class="step-number">${index+1}.</div>
+                                    <div class="step-text">${step}</div>
+                                </li>
+                            `;
+                        });
+                        
+                        // 显示菜谱部分和重试按钮
+                        document.getElementById('recipeSection').classList.add('visible');
+                        document.getElementById('retryButton').style.display = 'block';
+                        document.getElementById('instruction').style.display = 'none';
+                    }, 1000);
+                }
+            }
+        }
+        
+        document.getElementById('retryButton').addEventListener('click', () => {
+            // 重置卡片状态
+            const cards = document.querySelectorAll('.fortune-card');
+            cards.forEach(card => {
+                card.classList.remove('flipped');
+            });
+            
+            // 重置计数和隐藏菜谱部分
+            flippedCount = 0;
+            document.getElementById('recipeSection').classList.remove('visible');
+            document.getElementById('retryButton').style.display = 'none';
+            document.getElementById('fortuneMessage').textContent = '';
+            document.getElementById('instruction').style.display = 'block';
+            
+            // 重新洗牌
+            shuffleCards();
+        });
+    </script>
+</body>
+</html>
