@@ -20,7 +20,7 @@ const CONFIG = {
     
     // 备用配置（如果代理不工作）
     fallback: {
-        apiBaseURL: 'http://localhost:5001/api',
+        apiBaseURL: 'https://forbites.vercel.app/api',
         debug: true
     }
 };
@@ -33,8 +33,8 @@ function getConfig() {
     
     console.log('环境检测:', { hostname, port, pathname, href: window.location.href });
     
-    // 静态部署环境（直接访问frontend目录下的文件）
-    if (pathname.includes('/frontend/') || hostname === 'www.forbites.store') {
+    // 静态部署环境（直接访问frontend目录下的文件或forbites.store域名）
+    if (pathname.includes('/frontend/') || hostname === 'www.forbites.store' || hostname === 'forbites.store') {
         console.log('使用静态部署环境配置');
         return CONFIG.static;
     }
@@ -75,7 +75,7 @@ async function testAndFallbackConfig() {
     }
     
     // 如果是静态部署环境，测试API连接
-    if (config.apiBaseURL.includes('api.forbites.store')) {
+    if (config.apiBaseURL.includes('forbites.vercel.app')) {
         try {
             console.log('测试静态部署环境API连接...');
             const response = await fetch(config.apiBaseURL + '/recipe/filters');
