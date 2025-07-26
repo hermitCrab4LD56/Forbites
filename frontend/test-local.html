@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本地存储测试 - 四时</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5dc;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #60281E;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #4a1f17;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background: #f0f0f0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🧪 本地存储功能测试</h1>
+    
+    <div class="test-section">
+        <h2>测试1: 环境检测</h2>
+        <button onclick="testEnvironment()">检测当前环境</button>
+        <div id="envResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试2: 模拟筛选条件</h2>
+        <button onclick="testFilters()">模拟保存筛选条件</button>
+        <div id="filterResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试3: 生成本地菜谱</h2>
+        <button onclick="testLocalRecipes()">生成本地菜谱数据</button>
+        <div id="recipeResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试4: 完整流程</h2>
+        <button onclick="testFullFlow()">测试完整流程</button>
+        <div id="fullResult" class="result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>测试5: 跳转到结果页面</h2>
+        <button onclick="goToResult()">跳转到recipe-result.html</button>
+        <div id="jumpResult" class="result"></div>
+    </div>
+
+    <script>
+        // 测试环境检测
+        function testEnvironment() {
+            const result = document.getElementById('envResult');
+            const hostname = window.location.hostname;
+            const isStaticDeployment = hostname === 'www.forbites.store' || hostname === 'forbites.store';
+            
+            let html = `<div class="success">`;
+            html += `<strong>当前环境信息:</strong><br>`;
+            html += `域名: ${hostname}<br>`;
+            html += `是否为静态部署: ${isStaticDeployment ? '是' : '否'}<br>`;
+            html += `完整URL: ${window.location.href}<br>`;
+            html += `建议使用: ${isStaticDeployment ? '本地存储' : 'API调用'}`;
+            html += `</div>`;
+            
+            result.innerHTML = html;
+        }
+        
+        // 测试筛选条件
+        function testFilters() {
+            const result = document.getElementById('filterResult');
+            
+            const filters = {
+                cooking_time: 2,
+                is_packable: true,
+                is_induction: false
+            };
+            
+            try {
+                localStorage.setItem('recipeFilters', JSON.stringify(filters));
+                const retrieved = JSON.parse(localStorage.getItem('recipeFilters'));
+                
+                if (JSON.stringify(filters) === JSON.stringify(retrieved)) {
+                    result.innerHTML = `<div class="success">✅ 筛选条件保存成功!<br>数据: ${JSON.stringify(filters, null, 2)}</div>`;
+                } else {
+                    result.innerHTML = `<div class="error">❌ 筛选条件数据不匹配</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 筛选条件保存失败: ${error.message}</div>`;
+            }
+        }
+        
+        // 测试本地菜谱生成
+        function testLocalRecipes() {
+            const result = document.getElementById('recipeResult');
+            
+            const filters = {
+                cooking_time: 2,
+                is_packable: true,
+                is_induction: false
+            };
+            
+            const recipes = [
+                {
+                    id: 1,
+                    name: '红烧排骨',
+                    description: '经典的家常菜，肉质鲜嫩，味道浓郁',
+                    cooking_time: 90,
+                    is_packable: true,
+                    is_induction: true,
+                    ingredients: ['排骨', '姜', '蒜', '料酒', '生抽', '老抽', '冰糖'],
+                    steps: ['排骨焯水去血水', '锅中放油，爆香姜蒜', '放入排骨翻炒上色'],
+                    tips: ['排骨一定要焯水，这样炖出来的汤才会清澈']
+                }
+            ];
+
+            const localRecipeData = {
+                recipes: recipes,
+                filters: filters,
+                generated_at: new Date().toISOString(),
+                source: 'local'
+            };
+            
+            try {
+                localStorage.setItem('localRecipeData', JSON.stringify(localRecipeData));
+                const retrieved = JSON.parse(localStorage.getItem('localRecipeData'));
+                
+                if (JSON.stringify(localRecipeData) === JSON.stringify(retrieved)) {
+                    result.innerHTML = `<div class="success">✅ 本地菜谱数据生成成功!<br>菜谱数量: ${recipes.length}<br>生成时间: ${localRecipeData.generated_at}</div>`;
+                } else {
+                    result.innerHTML = `<div class="error">❌ 本地菜谱数据不匹配</div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">❌ 本地菜谱生成失败: ${error.message}</div>`;
+            }
+        }
+        
+        // 测试完整流程
+        function testFullFlow() {
+            const result = document.getElementById('fullResult');
+            const steps = [];
+            
+            // 步骤1: 环境检测
+            const hostname = window.location.hostname;
+            const isStaticDeployment = hostname === 'www.forbites.store' || hostname === 'forbites.store';
+            steps.push(`✅ 环境检测: ${isStaticDeployment ? '静态部署' : '其他环境'}`);
+            
+            // 步骤2: 保存筛选条件
+            const filters = {
+                cooking_time: 2,
+                is_packable: true,
+                is_induction: false
+            };
+            
+            try {
+                localStorage.setItem('recipeFilters', JSON.stringify(filters));
+                steps.push('✅ 筛选条件保存成功');
+            } catch (error) {
+                steps.push(`❌ 筛选条件保存失败: ${error.message}`);
+            }
+            
+            // 步骤3: 生成本地菜谱
+            const recipes = [
+                {
+                    id: 1,
+                    name: '红烧排骨',
+                    description: '经典的家常菜',
+                    cooking_time: 90,
+                    is_packable: true,
+                    is_induction: true,
+                    ingredients: ['排骨', '姜', '蒜'],
+                    steps: ['排骨焯水去血水'],
+                    tips: ['排骨一定要焯水']
+                }
+            ];
+            
+            const localRecipeData = {
+                recipes: recipes,
+                filters: filters,
+                generated_at: new Date().toISOString(),
+                source: 'local'
+            };
+            
+            try {
+                localStorage.setItem('localRecipeData', JSON.stringify(localRecipeData));
+                steps.push('✅ 本地菜谱数据生成成功');
+            } catch (error) {
+                steps.push(`❌ 本地菜谱生成失败: ${error.message}`);
+            }
+            
+            // 步骤4: 验证数据
+            try {
+                const savedFilters = JSON.parse(localStorage.getItem('recipeFilters'));
+                const savedRecipes = JSON.parse(localStorage.getItem('localRecipeData'));
+                
+                if (savedFilters && savedRecipes) {
+                    steps.push('✅ 数据验证成功');
+                } else {
+                    steps.push('❌ 数据验证失败');
+                }
+            } catch (error) {
+                steps.push(`❌ 数据验证失败: ${error.message}`);
+            }
+            
+            result.innerHTML = `<div class="success"><h4>完整流程测试结果:</h4>${steps.map(step => `<div>${step}</div>`).join('')}</div>`;
+        }
+        
+        // 跳转到结果页面
+        function goToResult() {
+            const result = document.getElementById('jumpResult');
+            
+            // 确保有测试数据
+            if (!localStorage.getItem('recipeFilters')) {
+                testFilters();
+            }
+            if (!localStorage.getItem('localRecipeData')) {
+                testLocalRecipes();
+            }
+            
+            result.innerHTML = `<div class="success">✅ 准备跳转到结果页面...<br>3秒后自动跳转</div>`;
+            
+            setTimeout(() => {
+                window.location.href = 'recipe-result.html';
+            }, 3000);
+        }
+    </script>
+</body>
+</html> 

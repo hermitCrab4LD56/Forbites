@@ -196,7 +196,21 @@ class APIUtils {
             console.log('发送请求到:', `${this.baseURL}/recipe/filters`);
             console.log('请求数据:', filters);
             
-            // 临时解决方案：如果API不可用，使用本地存储
+            // 检查是否为静态部署环境
+            const hostname = window.location.hostname;
+            const isStaticDeployment = hostname === 'www.forbites.store' || hostname === 'forbites.store';
+            
+            if (isStaticDeployment) {
+                console.log('检测到静态部署环境，直接使用本地存储');
+                localStorage.setItem('recipeFilters', JSON.stringify(filters));
+                return {
+                    message: '筛选条件已保存到本地',
+                    filters: filters,
+                    source: 'local'
+                };
+            }
+            
+            // 对于其他环境，尝试API调用
             if (this.baseURL.includes('vercel.app')) {
                 try {
                     const result = await this.request('/recipe/filters', {
@@ -207,11 +221,11 @@ class APIUtils {
                     return result;
                 } catch (apiError) {
                     console.warn('API不可用，使用本地存储:', apiError);
-                    // 使用本地存储作为备用方案
                     localStorage.setItem('recipeFilters', JSON.stringify(filters));
                     return {
                         message: '筛选条件已保存到本地',
-                        filters: filters
+                        filters: filters,
+                        source: 'local'
                     };
                 }
             } else {
@@ -224,10 +238,20 @@ class APIUtils {
             }
         } catch (error) {
             console.error('设置菜谱筛选条件失败:', error);
-            if (error.message.includes('Failed to fetch')) {
-                throw new Error('无法连接到后端服务器，请确保服务器正在运行 (http://localhost:5001)');
+            
+            // 无论什么错误，都尝试保存到本地存储
+            try {
+                localStorage.setItem('recipeFilters', JSON.stringify(filters));
+                console.log('错误后保存到本地存储成功');
+                return {
+                    message: '筛选条件已保存到本地',
+                    filters: filters,
+                    source: 'local'
+                };
+            } catch (localError) {
+                console.error('本地存储也失败:', localError);
+                throw new Error('无法保存筛选条件，请重试');
             }
-            throw error;
         }
     }
 

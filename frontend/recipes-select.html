@@ -663,6 +663,14 @@
                 const result = await api.setRecipeFilters(recipeFilters);
                 console.log('保存成功:', result);
                 
+                // 如果是本地存储，生成本地菜谱数据
+                if (result.source === 'local') {
+                    console.log('使用本地存储，生成本地菜谱数据');
+                    const localRecipeData = generateLocalRecipeData(recipeFilters);
+                    localStorage.setItem('localRecipeData', JSON.stringify(localRecipeData));
+                    console.log('本地菜谱数据已生成:', localRecipeData);
+                }
+                
                 // 跳转到菜谱生成页面
                 window.location.href = 'recipe-result.html';
             } catch (error) {
