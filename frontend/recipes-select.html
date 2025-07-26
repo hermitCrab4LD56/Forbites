@@ -391,18 +391,12 @@
             </div>
 
             <button class="submit-button" onclick="generateRecipes()">生成菜谱推荐</button>
-            <button class="submit-button" onclick="checkAPIStatus()" style="background: #478778; margin-top: 10px;">检查API状态</button>
+            <button class="submit-button" onclick="checkAPIStatus()" style="background: #478778; margin-top: 10px; border: 2px solid #478778; font-size: 1rem;">🔧 检查API状态</button>
+            <button class="submit-button" onclick="testLocalStorage()" style="background: #DAA520; margin-top: 10px; border: 2px solid #DAA520; font-size: 1rem;">🧪 测试本地存储</button>
         </div>
     </div>
     
-    <!-- API状态检查对话框 -->
-    <div id="apiStatusModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
-        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; max-width: 500px; width: 90%;">
-            <h3>🔧 API状态检查</h3>
-            <div id="apiStatusContent"></div>
-            <button onclick="document.getElementById('apiStatusModal').style.display='none'" style="margin-top: 15px; padding: 8px 16px; background: #60281E; color: white; border: none; border-radius: 5px; cursor: pointer;">关闭</button>
-        </div>
-    </div>
+
 
     <script src="config.js"></script>
     <script src="api-utils.js"></script>
@@ -470,64 +464,65 @@
 
         // 检查API状态
         async function checkAPIStatus() {
-            const modal = document.getElementById('apiStatusModal');
-            const content = document.getElementById('apiStatusContent');
+            console.log('开始检查API状态...');
             
-            content.innerHTML = '<p>正在检查API状态...</p>';
-            modal.style.display = 'block';
-            
-            const results = [];
+            // 创建简单的弹窗
+            let message = '🔧 API状态检查结果:\n\n';
             
             // 测试Vercel API
             try {
+                console.log('测试Vercel API...');
                 const response = await fetch('https://forbites.vercel.app/api/health');
-                results.push({
-                    name: 'Vercel API',
-                    status: response.ok ? '✅ 正常' : '❌ 失败',
-                    message: response.ok ? '连接成功' : `HTTP ${response.status}`
-                });
+                if (response.ok) {
+                    message += '✅ Vercel API: 正常\n';
+                } else {
+                    message += `❌ Vercel API: HTTP ${response.status}\n`;
+                }
             } catch (error) {
-                results.push({
-                    name: 'Vercel API',
-                    status: '❌ 失败',
-                    message: error.message
-                });
+                message += `❌ Vercel API: ${error.message}\n`;
             }
             
             // 测试当前配置的API
             try {
+                console.log('测试当前API配置...');
                 const response = await fetch(api.baseURL + '/health');
-                results.push({
-                    name: '当前API配置',
-                    status: response.ok ? '✅ 正常' : '❌ 失败',
-                    message: response.ok ? '连接成功' : `HTTP ${response.status}`
-                });
+                if (response.ok) {
+                    message += '✅ 当前API: 正常\n';
+                } else {
+                    message += `❌ 当前API: HTTP ${response.status}\n`;
+                }
             } catch (error) {
-                results.push({
-                    name: '当前API配置',
-                    status: '❌ 失败',
-                    message: error.message
-                });
+                message += `❌ 当前API: ${error.message}\n`;
             }
             
-            // 显示结果
-            let html = '<h4>检查结果:</h4>';
-            results.forEach(result => {
-                html += `<p><strong>${result.name}:</strong> ${result.status} - ${result.message}</p>`;
-            });
+            message += `\n当前API地址: ${api.baseURL}\n`;
+            message += `当前环境: ${window.location.hostname}\n\n`;
+            message += '💡 即使API不可用，您仍可以使用本地存储功能继续使用应用。';
             
-            html += '<h4>当前配置:</h4>';
-            html += `<p><strong>API地址:</strong> ${api.baseURL}</p>`;
-            html += `<p><strong>环境:</strong> ${window.location.hostname}</p>`;
-            
-            html += '<h4>建议:</h4>';
-            if (results.some(r => r.status.includes('✅'))) {
-                html += '<p style="color: green;">✅ API正常工作，可以正常使用</p>';
-            } else {
-                html += '<p style="color: orange;">⚠️ API暂时不可用，但可以使用本地存储功能</p>';
+            alert(message);
+        }
+
+        // 测试本地存储
+        function testLocalStorage() {
+            try {
+                const testData = {
+                    cooking_time: 2,
+                    is_packable: true,
+                    is_induction: false,
+                    test_time: new Date().toISOString()
+                };
+                
+                localStorage.setItem('recipeFilters', JSON.stringify(testData));
+                const retrieved = JSON.parse(localStorage.getItem('recipeFilters'));
+                
+                if (JSON.stringify(testData) === JSON.stringify(retrieved)) {
+                    alert('✅ 本地存储测试成功!\n\n保存的数据:\n' + JSON.stringify(testData, null, 2));
+                } else {
+                    alert('❌ 本地存储数据不匹配');
+                }
+            } catch (error) {
+                alert('❌ 本地存储错误: ' + error.message);
             }
-            
-            content.innerHTML = html;
         }
 
         // 生成菜谱推荐
