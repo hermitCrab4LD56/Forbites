@@ -184,13 +184,19 @@ class APIUtils {
 
     async setRecipeFilters(filters) {
         try {
+            console.log('发送请求到:', `${this.baseURL}/recipe/filters`);
+            console.log('请求数据:', filters);
             const result = await this.request('/recipe/filters', {
                 method: 'POST',
                 body: JSON.stringify(filters)
             });
+            console.log('API响应:', result);
             return result;
         } catch (error) {
             console.error('设置菜谱筛选条件失败:', error);
+            if (error.message.includes('Failed to fetch')) {
+                throw new Error('无法连接到后端服务器，请确保服务器正在运行 (http://localhost:5001)');
+            }
             throw error;
         }
     }

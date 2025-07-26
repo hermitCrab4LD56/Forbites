@@ -492,12 +492,14 @@
             };
             
             try {
-                await api.setRecipeFilters(recipeFilters);
+                console.log('正在保存筛选条件:', recipeFilters);
+                const result = await api.setRecipeFilters(recipeFilters);
+                console.log('保存成功:', result);
                 // 跳转到菜谱生成页面
                 window.location.href = 'recipe-result.html';
             } catch (error) {
-                alert('保存筛选条件失败，请重试');
                 console.error('保存筛选条件失败:', error);
+                alert(`保存筛选条件失败: ${error.message}\n请确保后端服务器正在运行 (http://localhost:5001)`);
             }
         }
     </script>
