@@ -195,12 +195,33 @@ class APIUtils {
         try {
             console.log('发送请求到:', `${this.baseURL}/recipe/filters`);
             console.log('请求数据:', filters);
-            const result = await this.request('/recipe/filters', {
-                method: 'POST',
-                body: JSON.stringify(filters)
-            });
-            console.log('API响应:', result);
-            return result;
+            
+            // 临时解决方案：如果API不可用，使用本地存储
+            if (this.baseURL.includes('vercel.app')) {
+                try {
+                    const result = await this.request('/recipe/filters', {
+                        method: 'POST',
+                        body: JSON.stringify(filters)
+                    });
+                    console.log('API响应:', result);
+                    return result;
+                } catch (apiError) {
+                    console.warn('API不可用，使用本地存储:', apiError);
+                    // 使用本地存储作为备用方案
+                    localStorage.setItem('recipeFilters', JSON.stringify(filters));
+                    return {
+                        message: '筛选条件已保存到本地',
+                        filters: filters
+                    };
+                }
+            } else {
+                const result = await this.request('/recipe/filters', {
+                    method: 'POST',
+                    body: JSON.stringify(filters)
+                });
+                console.log('API响应:', result);
+                return result;
+            }
         } catch (error) {
             console.error('设置菜谱筛选条件失败:', error);
             if (error.message.includes('Failed to fetch')) {
