@@ -17,14 +17,21 @@ class APIUtils {
         
         const finalOptions = { ...defaultOptions, ...options };
         
+        console.log('API请求:', { url, method: finalOptions.method || 'GET', baseURL: this.baseURL });
+        
         try {
             const response = await fetch(url, finalOptions);
+            console.log('API响应:', { status: response.status, ok: response.ok, url: response.url });
+            
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorText = await response.text();
+                console.error('API错误响应:', errorText);
+                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
             }
             return await response.json();
         } catch (error) {
             console.error('API请求失败:', error);
+            console.error('请求详情:', { url, options: finalOptions });
             throw error;
         }
     }
