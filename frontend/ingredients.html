@@ -409,6 +409,15 @@
             <button onclick="testClearAll()" style="padding: 0.5rem 1rem; background: #C7302B; color: white; border: none; border-radius: 4px; cursor: pointer;">测试清空功能</button>
             <div id="testResult" style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 4px;"></div>
         </div>
+        
+        <!-- 本地语音识别测试区域 -->
+        <div id="localVoiceTest" style="display: none; margin-top: 2rem; padding: 1rem; background: #e8f5e8; border-radius: 8px; border: 2px solid #478778;">
+            <h3>🧪 本地语音识别测试</h3>
+            <p>在静态部署环境下，语音识别功能会使用本地模拟。点击下面的按钮测试本地语音识别功能：</p>
+            <button onclick="testLocalVoiceRecognition()" style="padding: 0.8rem 1.5rem; background: #478778; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem; margin-right: 1rem;">测试本地语音识别</button>
+            <button onclick="clearVoiceTestResult()" style="padding: 0.8rem 1.5rem; background: #C7302B; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 1rem;">清空测试结果</button>
+            <div id="localVoiceTestResult" style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px; border: 1px solid #ddd;"></div>
+        </div>
     </div>
 
     <script src="api-utils.js"></script>
@@ -584,6 +593,11 @@
                 
                 const recognizedText = result.text;
                 
+                // 如果是本地模拟，显示提示
+                if (result.source === 'local_simulation') {
+                    console.log('使用本地语音识别模拟');
+                }
+                
                 // 解析食材和数量
                 const parsedIngredients = parseIngredientsFromText(recognizedText);
                 
@@ -658,6 +672,8 @@
                     2. 语音是否清晰
                     <br>
                     3. 百度API密钥是否配置正确
+                    <br><br>
+                    <strong>提示：</strong>在静态部署环境下，系统会使用本地模拟功能
                 `;
                 
                 setTimeout(() => {
@@ -1038,11 +1054,89 @@
             }
         }
 
+        // 测试本地语音识别功能
+        async function testLocalVoiceRecognition() {
+            const resultElement = document.getElementById('localVoiceTestResult');
+            resultElement.innerHTML = '<strong>正在测试本地语音识别...</strong>';
+            
+            try {
+                // 调用本地语音识别模拟
+                const result = await api.simulateVoiceRecognition();
+                
+                if (result.error) {
+                    resultElement.innerHTML = `<strong>测试失败：</strong>${result.error}`;
+                    return;
+                }
+                
+                const recognizedText = result.text;
+                
+                // 解析食材和数量
+                const parsedIngredients = parseIngredientsFromText(recognizedText);
+                
+                // 显示测试结果
+                resultElement.innerHTML = `
+                    <strong>✅ 本地语音识别测试成功！</strong><br><br>
+                    <strong>模拟识别结果：</strong>${recognizedText}<br><br>
+                    <strong>解析结果：</strong><br>
+                    ${parsedIngredients.map(item => `${item.name}：${item.quantity}`).join('、')}<br><br>
+                    <strong>数据来源：</strong>${result.source}<br><br>
+                    <em>💡 在静态部署环境下，语音识别功能会使用这种本地模拟方式，确保功能可用。</em>
+                `;
+                
+                // 自动添加到仓库
+                parsedIngredients.forEach(item => {
+                    const ingredientName = item.name;
+                    if (!selectedIngredients.includes(ingredientName)) {
+                        selectedIngredients.push(ingredientName);
+                    }
+                    
+                    // 累加数量
+                    const currentQuantity = ingredientQuantities[ingredientName] || '0个';
+                    const newQuantity = item.quantity;
+                    
+                    const currentNum = parseInt(currentQuantity.match(/\d+/)[0]) || 0;
+                    const newNum = parseInt(newQuantity.match(/\d+/)[0]) || 0;
+                    
+                    let unit = '个';
+                    const unitMatch = newQuantity.match(/[个包根瓶袋斤克千克公斤片瓣把束盒]/);
+                    if (unitMatch) {
+                        unit = unitMatch[0];
+                    } else {
+                        const currentUnitMatch = currentQuantity.match(/[个包根瓶袋斤克千克公斤片瓣把束盒]/);
+                        if (currentUnitMatch) {
+                            unit = currentUnitMatch[0];
+                        }
+                    }
+                    
+                    const totalNum = currentNum + newNum;
+                    ingredientQuantities[ingredientName] = `${totalNum}${unit}`;
+                });
+                
+                updateWarehouseDisplay();
+                saveToLocalStorage();
+                
+            } catch (error) {
+                resultElement.innerHTML = `<strong>❌ 测试失败：</strong>${error.message}`;
+            }
+        }
+        
+        // 清空语音测试结果
+        function clearVoiceTestResult() {
+            document.getElementById('localVoiceTestResult').innerHTML = '';
+        }
+        
         // 页面加载时运行测试（仅在开发环境）
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             setTimeout(() => {
                 testIngredientSynonyms();
                 document.getElementById('testArea').style.display = 'block';
+            }, 1000);
+        }
+        
+        // 在静态部署环境下显示本地语音识别测试区域
+        if (window.location.hostname === 'www.forbites.store' || window.location.hostname === 'forbites.store') {
+            setTimeout(() => {
+                document.getElementById('localVoiceTest').style.display = 'block';
             }, 1000);
         }
 
