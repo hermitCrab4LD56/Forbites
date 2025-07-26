@@ -85,7 +85,7 @@ def main():
     
     print("=" * 50)
     print("🎉 应用启动成功!")
-    print("📱 前端地址: http://localhost:8000")
+    print("📱 前端地址: http://localhost:8001")
     print("🔧 后端地址: http://localhost:5001")
     print("按 Ctrl+C 停止所有服务器")
     print("=" * 50)

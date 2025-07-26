@@ -569,9 +569,9 @@ def set_recipe_filters():
 # --- 数据库初始化与应用启动 ---
 def seed_database():
     if TipItem.query.first():
-        print("数据库已有数据，跳过填充。")
+        print("Database already has data, skipping seeding.")
         return
-    print("正在为'tips'模块填充初始数据...")
+    print("Seeding initial data for 'tips' module...")
     tips_data = [
         TipItem(tip_type='translation', context='norway', data=json.dumps({'category': 'ingredient', 'cn': '三文鱼', 'no': 'Laks'})),
         TipItem(tip_type='translation', context='norway', data=json.dumps({'category': 'ingredient', 'cn': '鳕鱼', 'no': 'Torsk'})),
@@ -585,7 +585,7 @@ def seed_database():
     ]
     db.session.bulk_save_objects(tips_data)
     db.session.commit()
-    print("初始数据填充完毕。")
+    print("Initial data seeding completed.")
 
 if __name__ == '__main__':
     with app.app_context():
