@@ -566,6 +566,16 @@ def set_recipe_filters():
     
     return jsonify({'message': '筛选条件设置成功', 'filters': new_filter.to_dict()})
 
+# 健康检查端点
+@app.route('/api/health', methods=['GET'])
+def health_check():
+    """健康检查端点"""
+    return jsonify({
+        'status': 'healthy',
+        'timestamp': datetime.utcnow().isoformat(),
+        'version': '1.0.0'
+    })
+
 # --- 数据库初始化与应用启动 ---
 def seed_database():
     if TipItem.query.first():
@@ -586,6 +596,9 @@ def seed_database():
     db.session.bulk_save_objects(tips_data)
     db.session.commit()
     print("Initial data seeding completed.")
+
+# Vercel部署入口点
+app.debug = False
 
 if __name__ == '__main__':
     with app.app_context():

@@ -6,9 +6,15 @@ const CONFIG = {
         debug: true
     },
     
-    // 生产环境配置
+    // 生产环境配置（代理服务器）
     production: {
         apiBaseURL: '/api',  // 相对路径，通过代理访问后端
+        debug: false
+    },
+    
+    // 静态部署环境配置
+    static: {
+        apiBaseURL: 'https://forbites.vercel.app/api',  // Vercel部署的后端API
         debug: false
     },
     
@@ -23,8 +29,15 @@ const CONFIG = {
 function getConfig() {
     const hostname = window.location.hostname;
     const port = window.location.port;
+    const pathname = window.location.pathname;
     
-    console.log('环境检测:', { hostname, port, href: window.location.href });
+    console.log('环境检测:', { hostname, port, pathname, href: window.location.href });
+    
+    // 静态部署环境（直接访问frontend目录下的文件）
+    if (pathname.includes('/frontend/') || hostname === 'www.forbites.store') {
+        console.log('使用静态部署环境配置');
+        return CONFIG.static;
+    }
     
     // 本地开发环境
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
@@ -56,6 +69,22 @@ async function testAndFallbackConfig() {
             console.log('生产环境API连接成功');
         } catch (error) {
             console.warn('生产环境API连接失败，回退到备用配置:', error);
+            window.APP_CONFIG = CONFIG.fallback;
+            console.log('已切换到备用配置:', window.APP_CONFIG);
+        }
+    }
+    
+    // 如果是静态部署环境，测试API连接
+    if (config.apiBaseURL.includes('api.forbites.store')) {
+        try {
+            console.log('测试静态部署环境API连接...');
+            const response = await fetch(config.apiBaseURL + '/recipe/filters');
+            if (!response.ok) {
+                throw new Error(`API测试失败: ${response.status}`);
+            }
+            console.log('静态部署环境API连接成功');
+        } catch (error) {
+            console.warn('静态部署环境API连接失败，回退到备用配置:', error);
             window.APP_CONFIG = CONFIG.fallback;
             console.log('已切换到备用配置:', window.APP_CONFIG);
         }
