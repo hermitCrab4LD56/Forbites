@@ -323,6 +323,114 @@
                 gap: 1rem;
             }
         }
+        
+        /* 本地菜谱样式 */
+        .recipe-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-gray);
+        }
+        
+        .recipe-title {
+            font-size: 2rem;
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+        
+        .recipe-description {
+            font-size: 1.1rem;
+            color: var(--accent-jade);
+            margin-bottom: 1rem;
+        }
+        
+        .recipe-meta {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .recipe-meta span {
+            background: var(--light-jade);
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--accent-jade);
+        }
+        
+        .recipe-ingredients,
+        .recipe-steps,
+        .recipe-tips {
+            margin-bottom: 2rem;
+        }
+        
+        .recipe-ingredients h3,
+        .recipe-steps h3,
+        .recipe-tips h3 {
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+        
+        .recipe-ingredients ul,
+        .recipe-steps ol,
+        .recipe-tips ul {
+            padding-left: 1.5rem;
+        }
+        
+        .recipe-ingredients li,
+        .recipe-steps li,
+        .recipe-tips li {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+        
+        .recipe-selector {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--border-gray);
+        }
+        
+        .recipe-selector h3 {
+            color: var(--primary-red);
+            margin-bottom: 1rem;
+        }
+        
+        .recipe-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .recipe-item {
+            background: var(--paper-white);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 2px solid var(--border-gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .recipe-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 4px 4px 12px var(--shadow-dark);
+            border-color: var(--accent-jade);
+        }
+        
+        .recipe-item h4 {
+            color: var(--primary-red);
+            margin-bottom: 0.5rem;
+        }
+        
+        .recipe-item p {
+            color: var(--accent-jade);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .recipe-item span {
+            color: var(--secondary-gold);
+            font-size: 0.8rem;
+        }
     </style>
 </head>
 <body>
@@ -549,6 +657,7 @@
 
         <div class="more-recipes">
             <button class="more-button" onclick="window.location.href='recipes-select.html'">重新筛选菜谱</button>
+            <button class="more-button" onclick="loadLocalRecipes()" style="background: #478778; margin-left: 10px;">加载本地菜谱</button>
         </div>
     </div>
 
@@ -631,7 +740,126 @@
                     </div>
                 `;
             }
+            
+            // 尝试加载本地菜谱数据
+            loadLocalRecipes();
         });
+        
+        // 加载本地菜谱数据
+        function loadLocalRecipes() {
+            try {
+                const localRecipeData = localStorage.getItem('localRecipeData');
+                if (localRecipeData) {
+                    const data = JSON.parse(localRecipeData);
+                    console.log('加载本地菜谱数据:', data);
+                    
+                    if (data.recipes && data.recipes.length > 0) {
+                        displayLocalRecipes(data.recipes);
+                    } else {
+                        console.log('本地菜谱数据为空');
+                    }
+                } else {
+                    console.log('没有找到本地菜谱数据');
+                }
+            } catch (error) {
+                console.error('加载本地菜谱数据失败:', error);
+            }
+        }
+        
+        // 显示本地菜谱
+        function displayLocalRecipes(recipes) {
+            const recipeContainer = document.querySelector('.recipe-content');
+            if (!recipeContainer) {
+                console.error('找不到菜谱容器');
+                return;
+            }
+            
+            // 清空现有内容
+            recipeContainer.innerHTML = '';
+            
+            // 显示第一个菜谱
+            if (recipes.length > 0) {
+                const recipe = recipes[0];
+                displayRecipe(recipe);
+            }
+            
+            // 如果有多个菜谱，显示选择器
+            if (recipes.length > 1) {
+                displayRecipeSelector(recipes);
+            }
+        }
+        
+        // 显示单个菜谱
+        function displayRecipe(recipe) {
+            const recipeContainer = document.querySelector('.recipe-content');
+            
+            const recipeHTML = `
+                <div class="recipe-header">
+                    <h2 class="recipe-title">${recipe.name}</h2>
+                    <p class="recipe-description">${recipe.description}</p>
+                    <div class="recipe-meta">
+                        <span class="cooking-time">⏱️ ${recipe.cooking_time}分钟</span>
+                        <span class="packable">${recipe.is_packable ? '🍱 可打包' : '🍽️ 堂食'}</span>
+                        <span class="induction">${recipe.is_induction ? '🔥 适合电磁炉' : '🔥 其他烹饪方式'}</span>
+                    </div>
+                </div>
+                
+                <div class="recipe-ingredients">
+                    <h3>食材</h3>
+                    <ul>
+                        ${recipe.ingredients.map(ingredient => `<li>${ingredient}</li>`).join('')}
+                    </ul>
+                </div>
+                
+                <div class="recipe-steps">
+                    <h3>步骤</h3>
+                    <ol>
+                        ${recipe.steps.map(step => `<li>${step}</li>`).join('')}
+                    </ol>
+                </div>
+                
+                <div class="recipe-tips">
+                    <h3>小贴士</h3>
+                    <ul>
+                        ${recipe.tips.map(tip => `<li>💡 ${tip}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+            
+            recipeContainer.innerHTML = recipeHTML;
+        }
+        
+        // 显示菜谱选择器
+        function displayRecipeSelector(recipes) {
+            const selectorHTML = `
+                <div class="recipe-selector">
+                    <h3>选择其他菜谱</h3>
+                    <div class="recipe-list">
+                        ${recipes.map((recipe, index) => `
+                            <div class="recipe-item" onclick="selectRecipe(${index})">
+                                <h4>${recipe.name}</h4>
+                                <p>${recipe.description}</p>
+                                <span>⏱️ ${recipe.cooking_time}分钟</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            
+            const recipeContainer = document.querySelector('.recipe-content');
+            recipeContainer.insertAdjacentHTML('beforeend', selectorHTML);
+        }
+        
+        // 选择菜谱
+        function selectRecipe(index) {
+            const localRecipeData = localStorage.getItem('localRecipeData');
+            if (localRecipeData) {
+                const data = JSON.parse(localRecipeData);
+                if (data.recipes && data.recipes[index]) {
+                    displayRecipe(data.recipes[index]);
+                }
+            }
+        }
     </script>
 </body>
 </html>

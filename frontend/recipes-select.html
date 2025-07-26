@@ -502,6 +502,103 @@
             alert(message);
         }
 
+        // 生成本地菜谱推荐数据
+        function generateLocalRecipeData(filters) {
+            const recipes = [
+                {
+                    id: 1,
+                    name: '红烧排骨',
+                    description: '经典的家常菜，肉质鲜嫩，味道浓郁',
+                    cooking_time: 90,
+                    is_packable: true,
+                    is_induction: true,
+                    ingredients: ['排骨', '姜', '蒜', '料酒', '生抽', '老抽', '冰糖'],
+                    steps: [
+                        '排骨焯水去血水',
+                        '锅中放油，爆香姜蒜',
+                        '放入排骨翻炒上色',
+                        '加入料酒、生抽、老抽调味',
+                        '加入冰糖，加水没过排骨',
+                        '大火烧开后转小火炖1小时',
+                        '收汁即可'
+                    ],
+                    tips: [
+                        '排骨一定要焯水，这样炖出来的汤才会清澈',
+                        '电磁炉炖汤时可以先用高火煮开，再转中小火慢炖',
+                        '冰糖可以让肉质更嫩，颜色更红亮'
+                    ]
+                },
+                {
+                    id: 2,
+                    name: '清炒小白菜',
+                    description: '简单易做的素菜，营养丰富',
+                    cooking_time: 15,
+                    is_packable: true,
+                    is_induction: true,
+                    ingredients: ['小白菜', '蒜', '盐', '油'],
+                    steps: [
+                        '小白菜洗净切段',
+                        '蒜切末',
+                        '锅中放油，爆香蒜末',
+                        '放入小白菜翻炒',
+                        '加盐调味即可'
+                    ],
+                    tips: [
+                        '小白菜要大火快炒，保持脆嫩',
+                        '蒜末爆香是关键，增加香味'
+                    ]
+                },
+                {
+                    id: 3,
+                    name: '番茄鸡蛋汤',
+                    description: '简单营养的汤品，适合打包',
+                    cooking_time: 20,
+                    is_packable: true,
+                    is_induction: true,
+                    ingredients: ['番茄', '鸡蛋', '葱花', '盐', '油'],
+                    steps: [
+                        '番茄切块',
+                        '锅中放油，炒香番茄',
+                        '加水烧开',
+                        '打散鸡蛋，慢慢倒入锅中',
+                        '加盐调味，撒葱花即可'
+                    ],
+                    tips: [
+                        '番茄要先炒出香味再加水',
+                        '鸡蛋要慢慢倒入，形成蛋花'
+                    ]
+                }
+            ];
+
+            // 根据筛选条件过滤菜谱
+            let filteredRecipes = recipes.filter(recipe => {
+                // 烹饪时间过滤
+                if (filters.cooking_time === 1 && recipe.cooking_time > 30) return false;
+                if (filters.cooking_time === 2 && recipe.cooking_time > 60) return false;
+                if (filters.cooking_time === 3 && recipe.cooking_time > 120) return false;
+                
+                // 打包要求过滤
+                if (filters.is_packable && !recipe.is_packable) return false;
+                
+                // 电磁炉要求过滤
+                if (filters.is_induction && !recipe.is_induction) return false;
+                
+                return true;
+            });
+
+            // 如果没有匹配的菜谱，返回所有菜谱
+            if (filteredRecipes.length === 0) {
+                filteredRecipes = recipes;
+            }
+
+            return {
+                recipes: filteredRecipes,
+                filters: filters,
+                generated_at: new Date().toISOString(),
+                source: 'local'
+            };
+        }
+
         // 测试本地存储
         function testLocalStorage() {
             try {
@@ -571,31 +668,21 @@
             } catch (error) {
                 console.error('保存筛选条件失败:', error);
                 
-                // 提供更详细的错误信息
-                let errorMessage = `保存筛选条件失败: ${error.message}`;
-                
-                if (error.message.includes('404')) {
-                    errorMessage += '\n\n可能的原因：';
-                    errorMessage += '\n1. Vercel API部署失败';
-                    errorMessage += '\n2. API地址配置错误';
-                    errorMessage += '\n3. 网络连接问题';
-                    errorMessage += '\n\n临时解决方案：';
-                    errorMessage += '\n筛选条件已保存到本地存储，可以继续使用';
-                }
-                
-                alert(errorMessage);
-                
-                // 即使API失败，也保存到本地存储
+                // 即使API失败，也保存到本地存储并生成菜谱推荐
                 try {
                     localStorage.setItem('recipeFilters', JSON.stringify(recipeFilters));
                     console.log('筛选条件已保存到本地存储');
                     
-                    // 询问用户是否继续
-                    if (confirm('API连接失败，但筛选条件已保存到本地。是否继续查看菜谱推荐？')) {
-                        window.location.href = 'recipe-result.html';
-                    }
+                    // 生成本地菜谱推荐数据
+                    const localRecipeData = generateLocalRecipeData(recipeFilters);
+                    localStorage.setItem('localRecipeData', JSON.stringify(localRecipeData));
+                    console.log('本地菜谱数据已生成:', localRecipeData);
+                    
+                    // 直接跳转到结果页面
+                    window.location.href = 'recipe-result.html';
                 } catch (localError) {
                     console.error('本地存储失败:', localError);
+                    alert('本地存储失败，请重试');
                 }
             }
         }
