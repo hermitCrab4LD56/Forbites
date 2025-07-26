@@ -579,7 +579,23 @@
 
             // 显示筛选条件
             const filterSummary = document.getElementById('filterSummary');
-            const savedFilters = await api.getRecipeFilters();
+            
+            // 尝试从API获取筛选条件，如果失败则从本地存储获取
+            let savedFilters = null;
+            try {
+                savedFilters = await api.getRecipeFilters();
+            } catch (error) {
+                console.warn('API获取筛选条件失败，尝试从本地存储获取:', error);
+                try {
+                    const localFilters = localStorage.getItem('recipeFilters');
+                    if (localFilters) {
+                        savedFilters = JSON.parse(localFilters);
+                        console.log('从本地存储获取筛选条件:', savedFilters);
+                    }
+                } catch (localError) {
+                    console.error('本地存储获取失败:', localError);
+                }
+            }
             
             if (savedFilters && Object.keys(savedFilters).length > 0) {
                 let timeText = '';
