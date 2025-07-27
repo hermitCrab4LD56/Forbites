@@ -5,10 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>菜谱选择 - 四时</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700&display=swap');
+        @font-face {
+            font-family: 'ShuQingGuKaiTi';
+            src: url('../assets/ShuQingGuKaiTi-2.ttf') format('truetype');
+            font-display: swap;
+        }
+        html, body, * {
+            font-family: 'ShuQingGuKaiTi', serif !important;
+        }
         
         :root {
-            --primary-red: #C7302B;
+            --primary-red: #60281E;
             --secondary-gold: #DAA520;
             --accent-jade: #478778;
             --warm-beige: #F5F5DC;
@@ -79,24 +86,12 @@
         }
 
         .qingtuan-icon {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 2rem;
-            background: radial-gradient(circle, #90EE90 30%, #228B22 70%);
-            border-radius: 50%;
+            background: url('../assets/1.png') no-repeat center center / contain !important;
+            border-radius: 0;
             position: relative;
-            filter: drop-shadow(4px 4px 8px var(--shadow-dark));
         }
-
         .qingtuan-icon::after {
-            content: '';
-            position: absolute;
-            top: 20%;
-            left: 20%;
-            width: 60%;
-            height: 60%;
-            background: radial-gradient(circle, #98FB98 40%, #228B22 80%);
-            border-radius: 50%;
+            content: none !important;
         }
 
         .page-title {
@@ -104,7 +99,7 @@
             font-weight: 700;
             color: var(--primary-red);
             margin-bottom: 1rem;
-            text-shadow: 2px 2px 4px var(--shadow-dark));
+            text-shadow: 2px 2px 4px var(--shadow-dark);
         }
 
         .page-subtitle {
@@ -399,10 +394,11 @@
         </div>
     </div>
 
+    <script src="api-utils.js"></script>
     <script>
         // 页面加载时显示用户位置
-        window.addEventListener('load', function() {
-            const savedLocation = localStorage.getItem('userLocation');
+        window.addEventListener('load', async function() {
+            const savedLocation = await api.getUserLocation();
             const locationInfo = document.getElementById('locationInfo');
             
             if (savedLocation) {
@@ -462,7 +458,7 @@
         }
 
         // 生成菜谱推荐
-        function generateRecipes() {
+        async function generateRecipes() {
             // 获取所有选项
             const cookingTime = parseInt(document.getElementById('timeSlider').value);
             
@@ -488,17 +484,21 @@
                 return;
             }
 
-            // 将选择保存到localStorage
+            // 将选择保存到数据库
             const recipeFilters = {
-                cookingTime: cookingTime,
-                isPackable: isPackable,
-                isInduction: isInduction
+                cooking_time: cookingTime,
+                is_packable: isPackable,
+                is_induction: isInduction
             };
             
-            localStorage.setItem('recipeFilters', JSON.stringify(recipeFilters));
-            
-            // 跳转到菜谱生成页面
-            window.location.href = 'recipe-result.html';
+            try {
+                await api.setRecipeFilters(recipeFilters);
+                // 跳转到菜谱生成页面
+                window.location.href = 'recipe-result.html';
+            } catch (error) {
+                alert('保存筛选条件失败，请重试');
+                console.error('保存筛选条件失败:', error);
+            }
         }
     </script>
 </body>

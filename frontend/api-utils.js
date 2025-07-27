@@ -1,9 +1,7 @@
 // API工具类 - 用于与后端通信，替换localStorage操作
 class APIUtils {
     constructor() {
-        // 使用配置文件中的API地址
-        this.baseURL = window.APP_CONFIG ? window.APP_CONFIG.apiBaseURL : '/api';
-        this.debug = window.APP_CONFIG ? window.APP_CONFIG.debug : false;
+        this.baseURL = 'http://localhost:5001/api';
     }
 
     // 通用请求方法
@@ -17,21 +15,14 @@ class APIUtils {
         
         const finalOptions = { ...defaultOptions, ...options };
         
-        console.log('API请求:', { url, method: finalOptions.method || 'GET', baseURL: this.baseURL });
-        
         try {
             const response = await fetch(url, finalOptions);
-            console.log('API响应:', { status: response.status, ok: response.ok, url: response.url });
-            
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error('API错误响应:', errorText);
-                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             return await response.json();
         } catch (error) {
             console.error('API请求失败:', error);
-            console.error('请求详情:', { url, options: finalOptions });
             throw error;
         }
     }
@@ -193,81 +184,20 @@ class APIUtils {
 
     async setRecipeFilters(filters) {
         try {
-            console.log('发送请求到:', `${this.baseURL}/recipe/filters`);
-            console.log('请求数据:', filters);
-            
-            // 检查是否为静态部署环境
-            const hostname = window.location.hostname;
-            const isStaticDeployment = hostname === 'www.forbites.store' || hostname === 'forbites.store';
-            
-            if (isStaticDeployment) {
-                console.log('检测到静态部署环境，直接使用本地存储');
-                localStorage.setItem('recipeFilters', JSON.stringify(filters));
-                return {
-                    message: '筛选条件已保存到本地',
-                    filters: filters,
-                    source: 'local'
-                };
-            }
-            
-            // 对于其他环境，尝试API调用
-            if (this.baseURL.includes('vercel.app')) {
-                try {
-                    const result = await this.request('/recipe/filters', {
-                        method: 'POST',
-                        body: JSON.stringify(filters)
-                    });
-                    console.log('API响应:', result);
-                    return result;
-                } catch (apiError) {
-                    console.warn('API不可用，使用本地存储:', apiError);
-                    localStorage.setItem('recipeFilters', JSON.stringify(filters));
-                    return {
-                        message: '筛选条件已保存到本地',
-                        filters: filters,
-                        source: 'local'
-                    };
-                }
-            } else {
-                const result = await this.request('/recipe/filters', {
-                    method: 'POST',
-                    body: JSON.stringify(filters)
-                });
-                console.log('API响应:', result);
-                return result;
-            }
+            const result = await this.request('/recipe/filters', {
+                method: 'POST',
+                body: JSON.stringify(filters)
+            });
+            return result;
         } catch (error) {
             console.error('设置菜谱筛选条件失败:', error);
-            
-            // 无论什么错误，都尝试保存到本地存储
-            try {
-                localStorage.setItem('recipeFilters', JSON.stringify(filters));
-                console.log('错误后保存到本地存储成功');
-                return {
-                    message: '筛选条件已保存到本地',
-                    filters: filters,
-                    source: 'local'
-                };
-            } catch (localError) {
-                console.error('本地存储也失败:', localError);
-                throw new Error('无法保存筛选条件，请重试');
-            }
+            throw error;
         }
     }
 
     // 语音识别
     async recognizeVoice(audioBlob) {
         try {
-            // 检查是否为静态部署环境
-            const hostname = window.location.hostname;
-            const isStaticDeployment = hostname === 'www.forbites.store' || hostname === 'forbites.store';
-            
-            if (isStaticDeployment) {
-                console.log('检测到静态部署环境，使用本地语音识别模拟');
-                return this.simulateVoiceRecognition();
-            }
-            
-            // 对于其他环境，尝试API调用
             const formData = new FormData();
             formData.append('audio', audioBlob);
             
@@ -282,45 +212,9 @@ class APIUtils {
             
             return await response.json();
         } catch (error) {
-            console.error('语音识别失败，使用本地模拟:', error);
-            return this.simulateVoiceRecognition();
+            console.error('语音识别失败:', error);
+            throw error;
         }
-    }
-    
-    // 本地语音识别模拟
-    simulateVoiceRecognition() {
-        // 模拟常见的食材语音输入
-        const commonIngredients = [
-            '土豆两个',
-            '胡萝卜三根',
-            '白菜一颗',
-            '猪肉一斤',
-            '鸡蛋十个',
-            '西红柿四个',
-            '青椒两个',
-            '洋葱一个',
-            '大蒜一包',
-            '生姜一块',
-            '生抽一瓶',
-            '老抽一瓶',
-            '料酒一瓶',
-            '盐一包',
-            '糖一包',
-            '油一瓶',
-            '醋一瓶',
-            '辣椒两个',
-            '香菜一把',
-            '葱花一把'
-        ];
-        
-        // 随机选择一个食材
-        const randomIngredient = commonIngredients[Math.floor(Math.random() * commonIngredients.length)];
-        
-        return {
-            text: randomIngredient,
-            error: null,
-            source: 'local_simulation'
-        };
     }
 
     // 存储建议
