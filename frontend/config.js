@@ -12,15 +12,9 @@ const CONFIG = {
         debug: false
     },
     
-    // Vercel部署环境配置
-    vercel: {
-        apiBaseURL: 'https://forbites.vercel.app/api',  // Vercel部署的后端API
-        debug: false
-    },
-    
-    // 静态部署环境配置（备用）
+    // 静态部署环境配置
     static: {
-        apiBaseURL: 'https://forbites.vercel.app/api',
+        apiBaseURL: 'https://forbites.vercel.app/api',  // Vercel部署的后端API
         debug: false
     },
     
@@ -38,12 +32,6 @@ function getConfig() {
     const pathname = window.location.pathname;
     
     console.log('环境检测:', { hostname, port, pathname, href: window.location.href });
-    
-    // Vercel部署环境
-    if (hostname === 'forbites.vercel.app' || hostname === 'www.forbites.vercel.app') {
-        console.log('使用Vercel部署环境配置');
-        return CONFIG.vercel;
-    }
     
     // 静态部署环境（直接访问frontend目录下的文件或forbites.store域名）
     if (pathname.includes('/frontend/') || hostname === 'www.forbites.store' || hostname === 'forbites.store') {
@@ -74,31 +62,31 @@ async function testAndFallbackConfig() {
     if (config.apiBaseURL === '/api') {
         try {
             console.log('测试生产环境API连接...');
-            const response = await fetch('/api/health');
+            const response = await fetch('/api/recipe/filters');
             if (!response.ok) {
                 throw new Error(`API测试失败: ${response.status}`);
             }
             console.log('生产环境API连接成功');
         } catch (error) {
-            console.warn('生产环境API连接失败，回退到Vercel配置:', error);
-            window.APP_CONFIG = CONFIG.vercel;
-            console.log('已切换到Vercel配置:', window.APP_CONFIG);
+            console.warn('生产环境API连接失败，回退到备用配置:', error);
+            window.APP_CONFIG = CONFIG.fallback;
+            console.log('已切换到备用配置:', window.APP_CONFIG);
         }
     }
     
-    // 如果是Vercel或静态部署环境，测试API连接
+    // 如果是静态部署环境，测试API连接
     if (config.apiBaseURL.includes('forbites.vercel.app')) {
         try {
-            console.log('测试Vercel API连接...');
-            const response = await fetch(config.apiBaseURL + '/health');
+            console.log('测试静态部署环境API连接...');
+            const response = await fetch(config.apiBaseURL + '/recipe/filters');
             if (!response.ok) {
                 throw new Error(`API测试失败: ${response.status}`);
             }
-            console.log('Vercel API连接成功');
+            console.log('静态部署环境API连接成功');
         } catch (error) {
-            console.warn('Vercel API连接失败，使用本地模拟:', error);
-            // 不切换到fallback，因为fallback也是Vercel
-            console.log('API连接失败，将使用本地模拟功能');
+            console.warn('静态部署环境API连接失败，回退到备用配置:', error);
+            window.APP_CONFIG = CONFIG.fallback;
+            console.log('已切换到备用配置:', window.APP_CONFIG);
         }
     }
 }

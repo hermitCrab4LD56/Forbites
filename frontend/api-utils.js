@@ -267,11 +267,9 @@ class APIUtils {
                 return this.simulateVoiceRecognition();
             }
             
-            // 对于Vercel部署环境，尝试API调用
+            // 对于其他环境，尝试API调用
             const formData = new FormData();
             formData.append('audio', audioBlob);
-            
-            console.log('尝试调用语音识别API:', `${this.baseURL}/pantry/voice_recognize`);
             
             const response = await fetch(`${this.baseURL}/pantry/voice_recognize`, {
                 method: 'POST',
@@ -279,14 +277,10 @@ class APIUtils {
             });
             
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error('语音识别API错误:', response.status, errorText);
-                throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`);
+                throw new Error(`HTTP error! status: ${response.status}`);
             }
             
-            const result = await response.json();
-            console.log('语音识别API成功:', result);
-            return result;
+            return await response.json();
         } catch (error) {
             console.error('语音识别失败，使用本地模拟:', error);
             return this.simulateVoiceRecognition();
@@ -316,34 +310,17 @@ class APIUtils {
             '醋一瓶',
             '辣椒两个',
             '香菜一把',
-            '葱花一把',
-            '豆腐一块',
-            '青菜一把',
-            '茄子两个',
-            '黄瓜三根',
-            '豆芽一斤',
-            '香菇半斤',
-            '木耳一包',
-            '粉丝一包',
-            '面条一包',
-            '米饭一碗'
+            '葱花一把'
         ];
         
-        // 使用时间戳作为种子，增加随机性
-        const seed = Date.now();
-        const randomIndex = seed % commonIngredients.length;
-        const randomIngredient = commonIngredients[randomIndex];
+        // 随机选择一个食材
+        const randomIngredient = commonIngredients[Math.floor(Math.random() * commonIngredients.length)];
         
-        // 模拟网络延迟
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve({
-                    text: randomIngredient,
-                    error: null,
-                    source: 'local_simulation'
-                });
-            }, 500 + (seed % 1000)); // 500-1500ms的随机延迟
-        });
+        return {
+            text: randomIngredient,
+            error: null,
+            source: 'local_simulation'
+        };
     }
 
     // 存储建议

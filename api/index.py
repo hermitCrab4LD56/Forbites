@@ -7,11 +7,11 @@ import sys
 import os
 
 # 添加backend目录到Python路径
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'backend'))
 
 # 导入Flask应用
 from app import app
 
-# 导出应用实例供Vercel使用
-if __name__ == "__main__":
+# 导出应用实例
+if __name__ == '__main__':
     app.run() 
