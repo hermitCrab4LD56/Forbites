@@ -299,11 +299,11 @@
             // 保存用户选择的位置到本地存储
             localStorage.setItem('userLocation', selectedLocation);
 
-            // 只有挪威可用，其它地区弹窗提示
-            if (selectedLocation !== 'norway') {
-                showConstructionMessage();
-                return;
-            }
+            // // 只有挪威可用，其它地区弹窗提示
+            // if (selectedLocation !== 'norway') {
+            //     showConstructionMessage();
+            //     return;
+            // }
             
             // 导航到对应页面
             switch(page) {
