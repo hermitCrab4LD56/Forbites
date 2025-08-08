@@ -248,6 +248,17 @@ def recommend_recipe():
 
     return jsonify(matched_recipes), 200
 
+# === 配置模块 ===
+@app.route('/api/config/keys', methods=['GET'])
+def get_api_keys():
+    """获取API密钥配置"""
+    # 实际生产环境中应该添加适当的身份验证和授权
+    return jsonify({
+        'BAIDU_ASR_API_KEY': BAIDU_ASR_API_KEY,
+        'BAIDU_ASR_SECRET_KEY': BAIDU_ASR_SECRET_KEY
+    }), 200
+
+
 # === “加料”模块 ===
 @app.route('/api/pantry/items', methods=['POST'])
 def add_pantry_items():

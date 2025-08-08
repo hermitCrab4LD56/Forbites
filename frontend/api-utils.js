@@ -235,22 +235,93 @@ class APIUtils {
         }
     }
 
-    // 语音识别
-    async recognizeVoice(audioBlob) {
+    // 获取百度语音识别Access Token
+    async getBaiduAccessToken() {
         try {
-            const formData = new FormData();
-            formData.append('audio', audioBlob);
-            
-            const response = await fetch(`${this.baseURL}/pantry/voice_recognize`, {
-                method: 'POST',
-                body: formData
+            // 先从后端API获取密钥
+            const keysResponse = await fetch('/api/config/keys', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
             });
             
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (!keysResponse.ok) {
+                throw new Error(`获取API密钥失败: HTTP状态码 ${keysResponse.status}`);
             }
             
-            return await response.json();
+            const { BAIDU_ASR_API_KEY, BAIDU_ASR_SECRET_KEY } = await keysResponse.json();
+            
+            if (!BAIDU_ASR_API_KEY || !BAIDU_ASR_SECRET_KEY) {
+                throw new Error('未获取到完整的百度API密钥');
+            }
+            
+            // 使用获取到的密钥请求百度Access Token
+            const tokenUrl = `https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${BAIDU_ASR_API_KEY}&client_secret=${BAIDU_ASR_SECRET_KEY}`;
+            
+            const tokenResponse = await fetch(tokenUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json; charset=UTF-8'
+                }
+            });
+            
+            const tokenData = await tokenResponse.json();
+            
+            if (!tokenData.access_token) {
+                throw new Error('获取百度Access Token失败: ' + (tokenData.err_msg || '未知错误'));
+            }
+            
+            return tokenData.access_token;
+        } catch (error) {
+            console.error('获取百度Access Token失败:', error);
+            throw error;
+        }
+    }
+
+    // 语音识别 - 调用百度云API
+    async recognizeVoice(audioBlob) {
+        try {
+            // 获取Access Token
+            const accessToken = await this.getBaiduAccessToken();
+            
+            // 语音识别API地址
+            const apiUrl = `https://vop.baidu.com/server_api?dev_pid=1537&cuid=forbites&token=${accessToken}`;
+            
+            // 读取音频文件并转换为Base64
+            const reader = new FileReader();
+            const audioData = await new Promise((resolve, reject) => {
+                reader.onloadend = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(audioBlob);
+            });
+            
+            // 发送请求到百度语音识别API
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    format: 'wav',
+                    rate: 16000,
+                    channel: 1,
+                    cuid: 'forbites',
+                    token: accessToken,
+                    speech: audioData,
+                    len: audioBlob.size
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.err_no !== 0) {
+                throw new Error(`百度语音识别失败: ${result.err_msg}`);
+            }
+            
+            return {
+                text: result.result[0]
+            };
         } catch (error) {
             console.error('语音识别失败:', error);
             throw error;
