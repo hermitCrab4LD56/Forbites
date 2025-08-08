@@ -184,6 +184,11 @@ class APIUtils {
 
     async setRecipeFilters(filters) {
         try {
+            const validFilters = {
+                cooking_time: filters.cooking_time || '',
+                is_packable: filters.is_packable || false,
+                is_induction: filters.is_induction || false
+            };
             const result = await this.request('/recipe/filters', {
                 method: 'POST',
                 body: JSON.stringify(filters)
@@ -192,6 +197,21 @@ class APIUtils {
         } catch (error) {
             console.error('设置菜谱筛选条件失败:', error);
             throw error;
+        }
+    }
+
+
+    // 菜谱推荐（对应后端generateRecipes相关的推荐接口）
+    async recommendRecipes(ingredients) {
+        try {
+            const result = await this.request('/recipe/recommend', {
+                method: 'POST',
+                body: JSON.stringify({ ingredients })
+            });
+            return result;
+        } catch (error) {
+            console.error('获取菜谱推荐失败:', error);
+            return [];
         }
     }
 

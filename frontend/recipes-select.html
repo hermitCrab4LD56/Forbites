@@ -459,45 +459,54 @@
 
         // 生成菜谱推荐
         async function generateRecipes() {
-            // 获取所有选项
-            const cookingTime = parseInt(document.getElementById('timeSlider').value);
-            
-            const packableOptions = document.querySelectorAll('#packableOptions .option-button');
-            let isPackable = null;
-            packableOptions.forEach(button => {
-                if (button.classList.contains('active')) {
-                    isPackable = button.dataset.value === 'yes';
-                }
-            });
-            
-            const inductionOptions = document.querySelectorAll('#inductionOptions .option-button');
-            let isInduction = null;
-            inductionOptions.forEach(button => {
-                if (button.classList.contains('active')) {
-                    isInduction = button.dataset.value === 'yes';
-                }
-            });
-            
-            // 检查是否所有选项都已选择
-            if (isPackable === null || isInduction === null) {
-                alert('请完成所有选项的选择！');
-                return;
-            }
-
-            // 将选择保存到数据库
-            const recipeFilters = {
-                cooking_time: cookingTime,
-                is_packable: isPackable,
-                is_induction: isInduction
-            };
-            
             try {
-                await api.setRecipeFilters(recipeFilters);
-                // 跳转到菜谱生成页面
-                window.location.href = 'recipe-result.html';
+                // 1. 获取用户选择的筛选条件
+                const cookingTime = parseInt(document.getElementById('timeSlider').value);
+                
+                const packableOptions = document.querySelectorAll('#packableOptions .option-button');
+                let isPackable = null;
+                packableOptions.forEach(button => {
+                    if (button.classList.contains('active')) {
+                        isPackable = button.dataset.value === 'yes';
+                    }
+                });
+                
+                const inductionOptions = document.querySelectorAll('#inductionOptions .option-button');
+                let isInduction = null;
+                inductionOptions.forEach(button => {
+                    if (button.classList.contains('active')) {
+                        isInduction = button.dataset.value === 'yes';
+                    }
+                });
+                
+                // 检查是否所有选项都已选择
+                if (isPackable === null || isInduction === null) {
+                    alert('请完成所有选项的选择！');
+                    return;
+                }
+
+                const filters = {
+                    cooking_time: cookingTime,
+                    is_packable: isPackable,
+                    is_induction: isInduction
+                };
+                
+                // 2. 保存筛选条件
+                await api.setRecipeFilters(filters);
+                
+                // 3. 获取用户食材
+                const userIngredients = await api.getUserIngredients();
+                const ingredientNames = userIngredients.map(item => item.name);
+                
+                // 4. 获取菜谱推荐（使用新增的recommendRecipes方法）
+                const recommendedRecipes = await api.recommendRecipes(ingredientNames);
+                
+                // 5. 渲染推荐结果（假设页面中有此函数）
+                renderRecipes(recommendedRecipes);
+                
             } catch (error) {
-                alert('保存筛选条件失败，请重试');
-                console.error('保存筛选条件失败:', error);
+                console.error('生成菜谱推荐失败:', error);
+                alert('生成菜谱推荐失败，请重试');
             }
         }
     </script>
