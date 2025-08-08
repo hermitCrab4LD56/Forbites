@@ -28,10 +28,8 @@ def main():
     core_packages = [
         "Flask==2.2.5",
         "flask-cors==4.0.0", 
-        "Flask-SQLAlchemy==3.0.5",
         "python-dotenv==0.21.1",
-        "requests==2.28.2",
-        "SQLAlchemy==1.4.46"
+        "requests==2.28.2"
     ]
     
     # 可选依赖（语音识别相关）
