@@ -391,16 +391,16 @@ def get_tips():
     return jsonify(filtered_tips)
 
 # === 用户位置管理 ===
-@app.route('/api/user/location', methods=['GET'])
-def get_user_location():
-    """获取用户位置"""
-    locations = load_data('user_locations')
-    # 查找user_id=1的最新位置
-    user_location = next(
-        (loc for loc in locations if loc.get('user_id') == 1),
-        None
-    )
-    return jsonify({'location': user_location.get('location')} if user_location else {'location': None})
+# @app.route('/api/user/location', methods=['GET'])
+# def get_user_location():
+#     """获取用户位置"""
+#     locations = load_data('user_locations')
+#     # 查找user_id=1的最新位置
+#     user_location = next(
+#         (loc for loc in locations if loc.get('user_id') == 1),
+#         None
+#     )
+#     return jsonify({'location': user_location.get('location')} if user_location else {'location': None})
 
 @app.route('/api/user/location', methods=['POST'])
 def set_user_location():

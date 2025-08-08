@@ -399,24 +399,24 @@
         // 页面加载时显示用户位置
         window.addEventListener('load', async function() {
             try {
-            const savedLocation = await api.getUserLocation();  // 调用正确的方法
-            const locationInfo = document.getElementById('locationInfo');
+            // const savedLocation = await api.getUserLocation();  // 调用正确的方法
+            // const locationInfo = document.getElementById('locationInfo');
             
-            if (savedLocation) {
-                const locationNames = {
-                    'norway': '挪威',
-                    'sweden': '瑞典',
-                    'denmark': '丹麦',
-                    'finland': '芬兰',
-                    'iceland': '冰岛',
-                    'germany': '德国',
-                    'netherlands': '荷兰',
-                    'france': '法国',
-                    'uk': '英国',
-                    'other': '欧洲'
-                };
-                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
-            }
+            // if (savedLocation) {
+            //     const locationNames = {
+            //         'norway': '挪威',
+            //         'sweden': '瑞典',
+            //         'denmark': '丹麦',
+            //         'finland': '芬兰',
+            //         'iceland': '冰岛',
+            //         'germany': '德国',
+            //         'netherlands': '荷兰',
+            //         'france': '法国',
+            //         'uk': '英国',
+            //         'other': '欧洲'
+            //     };
+            //     locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            // }
             updateTimeValue();
         } catch (error) {
             console.error('加载位置信息失败:', error);
@@ -504,8 +504,9 @@
                 // 4. 获取菜谱推荐（使用新增的recommendRecipes方法）
                 const recommendedRecipes = await api.recommendRecipes(ingredientNames);
                 
-                // 5. 渲染推荐结果（假设页面中有此函数）
-                renderRecipes(recommendedRecipes);
+                // 5. 存储推荐结果并跳转到结果页面
+                localStorage.setItem('recommendedRecipes', JSON.stringify(recommendedRecipes));
+                window.location.href = 'recipe-result.html';
                 
             } catch (error) {
                 console.error('生成菜谱推荐失败:', error);

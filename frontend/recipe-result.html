@@ -557,24 +557,24 @@
         // 页面加载时显示用户位置和筛选条件
         window.addEventListener('load', async function() {
             // 显示用户位置
-            const savedLocation = await api.getUserLocation();
-            const locationInfo = document.getElementById('locationInfo');
+            // const savedLocation = await api.getUserLocation();
+            // const locationInfo = document.getElementById('locationInfo');
             
-            if (savedLocation) {
-                const locationNames = {
-                    'norway': '挪威',
-                    'sweden': '瑞典',
-                    'denmark': '丹麦',
-                    'finland': '芬兰',
-                    'iceland': '冰岛',
-                    'germany': '德国',
-                    'netherlands': '荷兰',
-                    'france': '法国',
-                    'uk': '英国',
-                    'other': '欧洲'
-                };
-                locationInfo.textContent = locationNames[savedLocation] || '未知位置';
-            }
+            // if (savedLocation) {
+            //     const locationNames = {
+            //         'norway': '挪威',
+            //         'sweden': '瑞典',
+            //         'denmark': '丹麦',
+            //         'finland': '芬兰',
+            //         'iceland': '冰岛',
+            //         'germany': '德国',
+            //         'netherlands': '荷兰',
+            //         'france': '法国',
+            //         'uk': '英国',
+            //         'other': '欧洲'
+            //     };
+            //     locationInfo.textContent = locationNames[savedLocation] || '未知位置';
+            // }
 
             // 显示筛选条件
             const filterSummary = document.getElementById('filterSummary');

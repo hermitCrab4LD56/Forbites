@@ -28,28 +28,28 @@ class APIUtils {
     }
 
     // 用户位置管理
-    async getUserLocation() {
-        try {
-            const result = await this.request('/user/location');
-            return result.location;
-        } catch (error) {
-            console.error('获取用户位置失败:', error);
-            return null;
-        }
-    }
+    // async getUserLocation() {
+    //     try {
+    //         const result = await this.request('/user/location');
+    //         return result.location;
+    //     } catch (error) {
+    //         console.error('获取用户位置失败:', error);
+    //         return null;
+    //     }
+    // }
 
-    async setUserLocation(location) {
-        try {
-            const result = await this.request('/user/location', {
-                method: 'POST',
-                body: JSON.stringify({ location })
-            });
-            return result;
-        } catch (error) {
-            console.error('设置用户位置失败:', error);
-            throw error;
-        }
-    }
+    // async setUserLocation(location) {
+    //     try {
+    //         const result = await this.request('/user/location', {
+    //             method: 'POST',
+    //             body: JSON.stringify({ location })
+    //         });
+    //         return result;
+    //     } catch (error) {
+    //         console.error('设置用户位置失败:', error);
+    //         throw error;
+    //     }
+    // }
 
     // 知识库管理
     async getKnowledgeItems() {
@@ -123,11 +123,11 @@ class APIUtils {
         }
     }
 
-    // 用户食材管理
+    // 用户食材管理 - 使用localStorage代替API
     async getUserIngredients() {
         try {
-            const result = await this.request('/user/ingredients');
-            return result;
+            const ingredients = localStorage.getItem('userIngredients');
+            return ingredients ? JSON.parse(ingredients) : [];
         } catch (error) {
             console.error('获取用户食材失败:', error);
             return [];
@@ -171,11 +171,11 @@ class APIUtils {
         }
     }
 
-    // 菜谱筛选条件管理
+    // 菜谱筛选条件管理 - 使用localStorage代替API
     async getRecipeFilters() {
         try {
-            const result = await this.request('/recipe/filters');
-            return result;
+            const filters = localStorage.getItem('recipeFilters');
+            return filters ? JSON.parse(filters) : {};
         } catch (error) {
             console.error('获取菜谱筛选条件失败:', error);
             return {};
@@ -189,11 +189,8 @@ class APIUtils {
                 is_packable: filters.is_packable || false,
                 is_induction: filters.is_induction || false
             };
-            const result = await this.request('/recipe/filters', {
-                method: 'POST',
-                body: JSON.stringify(validFilters)
-            });
-            return result;
+            localStorage.setItem('recipeFilters', JSON.stringify(validFilters));
+            return validFilters;
         } catch (error) {
             console.error('设置菜谱筛选条件失败:', error);
             throw error;
@@ -201,14 +198,37 @@ class APIUtils {
     }
 
 
-    // 菜谱推荐（对应后端generateRecipes相关的推荐接口）
+    // 菜谱推荐 - 使用localStorage代替API
     async recommendRecipes(ingredients) {
         try {
-            const result = await this.request('/recipe/recommend', {
-                method: 'POST',
-                body: JSON.stringify({ ingredients })
+            // 从localStorage获取菜谱数据
+            const recipes = localStorage.getItem('recipes');
+            if (!recipes) return [];
+            
+            const parsedRecipes = JSON.parse(recipes);
+            const filters = await this.getRecipeFilters();
+            
+            // 简单的筛选逻辑（根据实际需求调整）
+            return parsedRecipes.filter(recipe => {
+                // 检查烹饪时间
+                if (filters.cooking_time === 1 && recipe.cooking_time > 30) return false;
+                if (filters.cooking_time === 2 && recipe.cooking_time > 60) return false;
+                if (filters.cooking_time === 3 && recipe.cooking_time > 120) return false;
+                
+                // 检查打包选项
+                if (filters.is_packable && !recipe.is_packable) return false;
+                
+                // 检查电磁炉选项
+                if (filters.is_induction && !recipe.is_induction) return false;
+                
+                // 检查食材匹配（简单匹配）
+                if (ingredients.length > 0) {
+                    const recipeIngredients = recipe.ingredients.map(ing => ing.name.toLowerCase());
+                    return ingredients.some(ing => recipeIngredients.includes(ing.toLowerCase()));
+                }
+                
+                return true;
             });
-            return result;
         } catch (error) {
             console.error('获取菜谱推荐失败:', error);
             return [];
@@ -281,19 +301,20 @@ const api = new APIUtils();
 const localStorageCompat = {
     // 用户位置
     async getItem(key) {
-        if (key === 'userLocation') {
-            return await api.getUserLocation();
-        }
+        // if (key === 'userLocation') {
+        //     return await api.getUserLocation();
+        // }
         // 其他localStorage操作保持原样
         return localStorage.getItem(key);
     },
 
     async setItem(key, value) {
-        if (key === 'userLocation') {
-            await api.setUserLocation(value);
-        } else {
-            localStorage.setItem(key, value);
-        }
+        // if (key === 'userLocation') {
+        //     await api.setUserLocation(value);
+        // } else {
+        //     localStorage.setItem(key, value);
+        // }
+        localStorage.setItem(key, value);
     },
 
     // 知识库项目
@@ -343,4 +364,4 @@ const localStorageCompat = {
     async setRecipeFilters(filters) {
         return await api.setRecipeFilters(filters);
     }
-}; 
+};
