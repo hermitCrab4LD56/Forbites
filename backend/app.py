@@ -15,7 +15,7 @@ import requests
 
 load_dotenv()
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # 确保数据目录存在
 DATA_DIR = os.path.join(os.path.dirname(__file__), 'data')

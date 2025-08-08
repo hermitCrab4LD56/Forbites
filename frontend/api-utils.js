@@ -1,7 +1,7 @@
 // API工具类 - 用于与后端通信，替换localStorage操作
 class APIUtils {
     constructor() {
-        this.baseURL = 'http://localhost:5001/api';
+        this.baseURL = '/api';
     }
 
     // 通用请求方法
