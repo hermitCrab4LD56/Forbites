@@ -185,13 +185,13 @@ class APIUtils {
     async setRecipeFilters(filters) {
         try {
             const validFilters = {
-                cooking_time: filters.cooking_time || '',
+                cooking_time: filters.cooking_time || 1,
                 is_packable: filters.is_packable || false,
                 is_induction: filters.is_induction || false
             };
             const result = await this.request('/recipe/filters', {
                 method: 'POST',
-                body: JSON.stringify(filters)
+                body: JSON.stringify(validFilters)
             });
             return result;
         } catch (error) {

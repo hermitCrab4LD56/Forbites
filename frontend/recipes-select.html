@@ -398,7 +398,8 @@
     <script>
         // 页面加载时显示用户位置
         window.addEventListener('load', async function() {
-            const savedLocation = await api.getUserLocation();
+            try {
+            const savedLocation = await api.getUserLocation();  // 调用正确的方法
             const locationInfo = document.getElementById('locationInfo');
             
             if (savedLocation) {
@@ -416,9 +417,11 @@
                 };
                 locationInfo.textContent = locationNames[savedLocation] || '未知位置';
             }
-
-            // 初始化时间滑块显示
             updateTimeValue();
+        } catch (error) {
+            console.error('加载位置信息失败:', error);
+            document.getElementById('locationInfo').textContent = '未知位置';
+        }
         });
 
         // 处理时间滑块变化
