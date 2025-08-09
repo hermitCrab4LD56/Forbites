@@ -682,10 +682,10 @@
                 // 获取音频数据
                 const channelData = audioBuffer.getChannelData(0); // 单声道
                 
-                // 如果采样率不是16kHz，需要重采样
+                // 如果采样率不是8kHz，需要重采样以匹配百度API要求
                 let processedData = channelData;
-                if (audioBuffer.sampleRate !== 16000) {
-                    const ratio = 16000 / audioBuffer.sampleRate;
+                if (audioBuffer.sampleRate !== 8000) {
+                    const ratio = 8000 / audioBuffer.sampleRate;
                     const newLength = Math.round(channelData.length * ratio);
                     processedData = new Float32Array(newLength);
                     
