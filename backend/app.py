@@ -349,7 +349,8 @@ def baidu_asr_proxy():
         # 添加调试信息到响应
         debug_info = {
             'received_params': f'rate={rate}, format={format}, dev_pid={dev_pid}',
-            'api_url': api_url
+            'api_url': api_url,
+            'audio_length': data['len']
         }
         response_data['debug_info'] = debug_info
         
