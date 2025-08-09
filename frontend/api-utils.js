@@ -282,7 +282,7 @@ class APIUtils {
                 },
                 body: JSON.stringify({
                     format: 'wav',
-                    rate: 16000,
+                    rate: 8000,
                     channel: 1,
                     cuid: 'forbites',
                     speech: audioData,
