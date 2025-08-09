@@ -275,7 +275,7 @@ class APIUtils {
                 reader.readAsDataURL(audioBlob);
             });
             
-            console.log('发送的语音识别参数: rate=16000, format=wav');
+            console.log('发送的语音识别参数: rate=8000, format=wav');
             // 发送请求到后端代理接口
             const response = await fetch('/api/baidu/asr', {
                 method: 'POST',
@@ -284,7 +284,7 @@ class APIUtils {
                 },
                 body: JSON.stringify({
                     format: 'wav',
-                    rate: 16000,
+                    rate: 8000,
                     channel: 1,
                     cuid: 'forbites',
                     speech: audioData,
@@ -293,6 +293,11 @@ class APIUtils {
             });
             
             const result = await response.json();
+            // 打印调试信息到控制台
+            if (result.debug_info) {
+                console.log('接收到的语音识别参数:', result.debug_info.received_params);
+                console.log('调用的API URL:', result.debug_info.api_url);
+            }
             console.log('百度语音识别结果:', result, 'err_no:', result.err_no);
 
             if (result.err_no !== 0) {
