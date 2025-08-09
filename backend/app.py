@@ -14,7 +14,7 @@ import requests
 # --- 1. 初始化与配置 ---
 
 load_dotenv()
-app = Flask(__name__)
+app = Flask(__name__, static_folder=os.path.join(os.path.dirname(__file__), '..'), static_url_path='/')
 CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # 确保数据目录存在
@@ -277,8 +277,9 @@ def baidu_asr_proxy():
         dev_pid = data.get('dev_pid', 1537)
         cuid = data.get('cuid', 'forbites')
         format = data.get('format', 'wav')
-        rate = data.get('rate', 8000)
-        app.logger.info(f'接收到的语音识别参数: rate={rate}, format={format}, dev_pid={dev_pid}')
+        rate = data.get('rate', 16000)
+        app.logger.info(f'接收到的语音识别参数: {data}, rate类型: {type(rate)}, rate值: {rate}')
+        print(f'接收到的语音识别参数: {data}, rate类型: {type(rate)}, rate值: {rate}')
         channel = data.get('channel', 1)
 
         api_url = f'{BAIDU_ASR_SERVER_URL}?dev_pid={dev_pid}&cuid={cuid}&token={access_token}'
@@ -293,6 +294,7 @@ def baidu_asr_proxy():
             'speech': data['speech'],
             'len': data['len']
         }
+        app.logger.info(f'转发到百度API的参数: {request_body}')
 
         # 发送请求到百度语音识别API
         response = requests.post(api_url, json=request_body, headers={'Content-Type': 'application/json'})
