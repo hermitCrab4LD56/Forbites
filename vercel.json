@@ -5,6 +5,10 @@
       "destination": "/backend/app.py"
     },
     {
+      "source": "/assets/(.*)",
+      "destination": "/assets/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/frontend/$1"
     }
