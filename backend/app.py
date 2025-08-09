@@ -283,6 +283,22 @@ def baidu_asr_proxy():
 
         api_url = f'{BAIDU_ASR_SERVER_URL}?dev_pid={dev_pid}&cuid={cuid}&token={access_token}'
 
+        # 验证采样率
+        supported_rates = [8000, 16000]  # 百度API支持的采样率
+        if rate not in supported_rates:
+            error_response = {
+                'err_no': 3311,
+                'err_msg': f'无效的采样率，支持的采样率: {supported_rates}',
+                'sn': '',
+                'debug_info': {
+                    'received_params': f'rate={rate}, format={format}, dev_pid={dev_pid}',
+                    'api_url': api_url,
+                    'supported_rates': supported_rates
+                }
+            }
+            app.logger.error(f'无效的采样率: {rate}，支持的采样率: {supported_rates}')
+            return jsonify(error_response)
+        
         # 验证音频长度
         min_audio_length = 100  # 最小音频长度（字节）
         max_audio_length = 10 * 1024 * 1024  # 最大音频长度（10MB）

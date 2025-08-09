@@ -298,6 +298,9 @@ class APIUtils {
             if (result.debug_info) {
                 console.log('接收到的语音识别参数:', result.debug_info.received_params);
                 console.log('调用的API URL:', result.debug_info.api_url);
+                if (result.debug_info.audio_length !== undefined) {
+                    console.log('音频长度:', result.debug_info.audio_length, '字节');
+                }
             }
             console.log('百度语音识别结果:', result, 'err_no:', result.err_no);
 
