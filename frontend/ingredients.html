@@ -490,7 +490,7 @@
                 // 请求麦克风权限，使用更适合语音识别的音频设置
                 const stream = await navigator.mediaDevices.getUserMedia({ 
                     audio: {
-                        sampleRate: 16000,
+                        sampleRate: 8000,
                         channelCount: 1,
                         echoCancellation: true,
                         noiseSuppression: true,
