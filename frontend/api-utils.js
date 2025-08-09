@@ -266,12 +266,6 @@ class APIUtils {
     // 语音识别 - 调用百度云API
     async recognizeVoice(audioBlob) {
         try {
-            // 获取Access Token
-            const accessToken = await this.getBaiduAccessToken();
-            
-            // 语音识别API地址
-            const apiUrl = `https://vop.baidu.com/server_api?dev_pid=1537&cuid=forbites&token=${accessToken}`;
-            
             // 读取音频文件并转换为Base64
             const reader = new FileReader();
             const audioData = await new Promise((resolve, reject) => {
@@ -280,8 +274,8 @@ class APIUtils {
                 reader.readAsDataURL(audioBlob);
             });
             
-            // 发送请求到百度语音识别API
-            const response = await fetch(apiUrl, {
+            // 发送请求到后端代理接口
+            const response = await fetch('/api/baidu/asr', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -291,7 +285,6 @@ class APIUtils {
                     rate: 16000,
                     channel: 1,
                     cuid: 'forbites',
-                    token: accessToken,
                     speech: audioData,
                     len: audioBlob.size
                 })

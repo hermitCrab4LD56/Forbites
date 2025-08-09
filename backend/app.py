@@ -78,6 +78,7 @@ BAIDU_ASR_API_KEY = os.getenv("BAIDU_ASR_API_KEY")
 BAIDU_ASR_SECRET_KEY = os.getenv("BAIDU_ASR_SECRET_KEY")
 BAIDU_ASR_TOKEN_URL = "https://aip.baidubce.com/oauth/2.0/token"
 BAIDU_ASR_URL = "https://vop.baidu.com/server_api"
+BAIDU_ASR_SERVER_URL = "https://vop.baidu.com/server_api"
 
 # --- 2. 数据库模型定义 ---
 
@@ -257,6 +258,49 @@ def get_baidu_token_proxy():
         return jsonify({'access_token': token}), 200
     except Exception as e:
         app.logger.error(f"百度令牌代理失败: {e}")
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/baidu/asr', methods=['POST'])
+def baidu_asr_proxy():
+    try:
+        # 获取请求参数
+        data = request.get_json()
+        if not data or 'speech' not in data or 'len' not in data:
+            return jsonify({'error': '缺少必要参数'}), 400
+
+        # 获取百度AccessToken
+        access_token = get_baidu_access_token()
+        if not access_token:
+            return jsonify({'error': '获取百度AccessToken失败'}), 500
+
+        # 构建百度语音识别API请求
+        dev_pid = data.get('dev_pid', 1537)
+        cuid = data.get('cuid', 'forbites')
+        format = data.get('format', 'wav')
+        rate = data.get('rate', 16000)
+        channel = data.get('channel', 1)
+
+        api_url = f'{BAIDU_ASR_SERVER_URL}?dev_pid={dev_pid}&cuid={cuid}&token={access_token}'
+
+        # 准备请求体
+        request_body = {
+            'format': format,
+            'rate': rate,
+            'channel': channel,
+            'cuid': cuid,
+            'token': access_token,
+            'speech': data['speech'],
+            'len': data['len']
+        }
+
+        # 发送请求到百度语音识别API
+        response = requests.post(api_url, json=request_body, headers={'Content-Type': 'application/json'})
+        response_data = response.json()
+
+        # 返回百度API的响应
+        return jsonify(response_data)
+    except Exception as e:
+        app.logger.error(f'百度语音识别代理失败: {str(e)}')
         return jsonify({'error': str(e)}), 500
 
 # === 配置模块 ===
