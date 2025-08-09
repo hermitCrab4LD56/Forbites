@@ -274,7 +274,6 @@ def baidu_asr_proxy():
         # 调用百度语音识别函数，传入正确的采样率
         recognized_text = baidu_speech_recognition(audio_data, sample_rate)
         
-        # 构造标准响应格式（包含识别结果和调试信息）
         response_data = {
             'text': recognized_text,
             'debug_info': {
@@ -283,17 +282,11 @@ def baidu_asr_proxy():
                 'audio_length': len(audio_data)
             }
         }
-        
-        # 返回统一格式的响应
         return jsonify(response_data), 200
         
     except Exception as e:
-        app.logger.error(f"百度语音识别代理错误: {e}")
-        # 错误响应也保持结构一致
-        return jsonify({
-            'error': str(e),
-            'err_no': 3311 if 'rate' in str(e).lower() else None
-        }), 500
+        # 错误响应：仅在失败时返回error
+        return jsonify({'error': str(e)}), 500
 
 # === 配置模块 ===
 @app.route('/api/config/keys', methods=['GET'])

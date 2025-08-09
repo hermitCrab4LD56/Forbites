@@ -265,57 +265,53 @@ class APIUtils {
     }
 
     // 语音识别 - 调用百度云API
-    async recognizeVoice(audioBlob) {
-        try {
-            // 读取音频文件并转换为Base64
-            const reader = new FileReader();
-            const audioData = await new Promise((resolve, reject) => {
-                reader.onloadend = () => resolve(reader.result.split(',')[1]);
-                reader.onerror = reject;
-                reader.readAsDataURL(audioBlob);
-            });
-            
-            // 打印音频大小信息
-            console.log(`发送的语音识别参数: rate=16000, format=pcm, 音频大小=${audioBlob.size}字节`);
-            // 发送请求到后端代理接口
-            const response = await fetch('/api/baidu/asr', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    format: 'pcm',
-                    rate: 16000,
-                    channel: 1,
-                    cuid: 'forbites',
-                    speech: audioData,
-                    len: audioBlob.size
-                })
-            });
-            
-            const result = await response.json();
-            // 打印调试信息到控制台
-            if (result.debug_info) {
-                console.log('接收到的语音识别参数:', result.debug_info.received_params);
-                console.log('调用的API URL:', result.debug_info.api_url);
-                if (result.debug_info.audio_length !== undefined) {
-                    console.log('音频长度:', result.debug_info.audio_length, '字节');
-                }
+async recognizeVoice(audioBlob) {
+    try {
+        // 读取音频文件并转换为Base64
+        const reader = new FileReader();
+        const audioData = await new Promise((resolve, reject) => {
+            reader.onloadend = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(audioBlob);
+        });
+        
+        // 修正日志中的硬编码rate，与实际发送值一致
+        console.log(`发送的语音识别参数: rate=16000, format=pcm, 音频大小=${audioBlob.size}字节`);
+        
+        // 发送请求到后端代理接口
+        const response = await fetch('/api/baidu/asr', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                format: 'pcm',
+                rate: 16000,
+                channel: 1,
+                cuid: 'forbites',
+                speech: audioData,
+                len: audioBlob.size
+            })
+        });
+        
+        const result = await response.json();
+        
+        // 打印调试信息（修复语法错误：闭合所有代码块）
+        if (result.debug_info) {
+            console.log('接收到的语音识别参数:', result.debug_info.received_params);
+            console.log('调用的API URL:', result.debug_info.api_url);
+            if (result.debug_info.audio_length !== undefined) {
+                console.log('音频长度:', result.debug_info.audio_length);
             }
-            console.log('百度语音识别结果:', result, 'err_no:', result.err_no);
-
-            if (result.err_no !== 0) {
-                throw new Error(`百度语音识别失败: ${result.err_msg}`);
-            }
-            
-            return {
-                text: result.result[0]
-            };
-        } catch (error) {
-            console.error('语音识别失败:', error);
-            throw error;
         }
+        
+        // 正常返回识别结果
+        return result;
+    } catch (error) {
+        console.error('语音识别过程出错:', error); // 更清晰的错误描述
+        throw error; // 抛出错误供上层处理
     }
+}
 
     // 存储建议
     async getStorageTips(ingredients) {

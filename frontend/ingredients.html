@@ -597,6 +597,11 @@
                     throw new Error(result.error);
                 }
                 
+                // 验证识别结果是否有效
+                if (!result.text || result.text.trim() === '') {
+                    throw new Error('未识别到有效内容，请重试');
+                }
+
                 const recognizedText = result.text;
                 
                 // 解析食材和数量
@@ -608,7 +613,8 @@
                     <br><br>
                     <strong>解析结果：</strong>
                     <br>
-                    ${parsedIngredients.map(item => `${item.name}：${item.quantity}`).join('、')}
+                    ${parsedIngredients.map(item => `${item.name}：${item.quantity}`).join('、') || '未解析到食材'}
+
                 `;
                 
                 // 添加到仓库
@@ -656,7 +662,7 @@
                 }, 3000);
                 
             } catch (error) {
-                console.error('语音识别失败:', error);
+                console.error('语音处理失败:', error);
                 const statusElement = document.getElementById('voiceStatus');
                 const resultElement = document.getElementById('voiceResult');
                 
