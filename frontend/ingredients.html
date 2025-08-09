@@ -670,9 +670,9 @@
 
         async function convertAudioForBaiduAPI(audioBlob) {
             try {
-                // 创建AudioContext，使用16kHz采样率
+                // 创建AudioContext，使用8kHz采样率以匹配百度API要求
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)({
-                    sampleRate: 16000
+                    sampleRate: 8000
                 });
                 
                 // 读取音频数据
