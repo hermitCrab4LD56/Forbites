@@ -293,7 +293,8 @@ class APIUtils {
             });
             
             const result = await response.json();
-            
+            console.log('百度语音识别结果:', result, 'err_no:', result.err_no);
+
             if (result.err_no !== 0) {
                 throw new Error(`百度语音识别失败: ${result.err_msg}`);
             }
