@@ -276,7 +276,7 @@ class APIUtils {
             });
             
             // 打印音频大小信息
-            console.log(`发送的语音识别参数: rate=8000, format=wav, 音频大小=${audioBlob.size}字节`);
+            console.log(`发送的语音识别参数: rate=8000, format=pcm, 音频大小=${audioBlob.size}字节`);
             // 发送请求到后端代理接口
             const response = await fetch('/api/baidu/asr', {
                 method: 'POST',
@@ -284,7 +284,7 @@ class APIUtils {
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
-                    format: 'wav',
+                    format: 'pcm',
                     rate: 8000,
                     channel: 1,
                     cuid: 'forbites',
