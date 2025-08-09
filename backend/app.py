@@ -248,6 +248,17 @@ def recommend_recipe():
 
     return jsonify(matched_recipes), 200
 
+# === 百度API代理模块 ===
+@app.route('/api/baidu/token', methods=['GET'])
+def get_baidu_token_proxy():
+    """代理获取百度API访问令牌"""
+    try:
+        token = get_baidu_access_token()
+        return jsonify({'access_token': token}), 200
+    except Exception as e:
+        app.logger.error(f"百度令牌代理失败: {e}")
+        return jsonify({'error': str(e)}), 500
+
 # === 配置模块 ===
 @app.route('/api/config/keys', methods=['GET'])
 def get_api_keys():

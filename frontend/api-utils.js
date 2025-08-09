@@ -238,41 +238,25 @@ class APIUtils {
     // 获取百度语音识别Access Token
     async getBaiduAccessToken() {
         try {
-            // 先从后端API获取密钥
-            const keysResponse = await fetch('/api/config/keys', {
+            // 调用后端代理接口获取百度Access Token
+            const tokenResponse = await fetch('/api/baidu/token', {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json; charset=UTF-8'
                 }
             });
             
-            if (!keysResponse.ok) {
-                throw new Error(`获取API密钥失败: HTTP状态码 ${keysResponse.status}`);
+            if (!tokenResponse.ok) {
+                throw new Error(`获取百度Access Token失败: HTTP状态码 ${tokenResponse.status}`);
             }
             
-            const { BAIDU_ASR_API_KEY, BAIDU_ASR_SECRET_KEY } = await keysResponse.json();
+            const { access_token } = await tokenResponse.json();
             
-            if (!BAIDU_ASR_API_KEY || !BAIDU_ASR_SECRET_KEY) {
-                throw new Error('未获取到完整的百度API密钥');
+            if (!access_token) {
+                throw new Error('未获取到百度Access Token');
             }
             
-            // 使用获取到的密钥请求百度Access Token
-            const tokenUrl = `https://aip.baidubce.com/oauth/2.0/token?grant_type=client_credentials&client_id=${BAIDU_ASR_API_KEY}&client_secret=${BAIDU_ASR_SECRET_KEY}`;
-            
-            const tokenResponse = await fetch(tokenUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json; charset=UTF-8'
-                }
-            });
-            
-            const tokenData = await tokenResponse.json();
-            
-            if (!tokenData.access_token) {
-                throw new Error('获取百度Access Token失败: ' + (tokenData.err_msg || '未知错误'));
-            }
-            
-            return tokenData.access_token;
+            return access_token;
         } catch (error) {
             console.error('获取百度Access Token失败:', error);
             throw error;
