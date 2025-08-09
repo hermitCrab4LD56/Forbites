@@ -136,6 +136,7 @@ class APIUtils {
 
     async addUserIngredients(ingredients) {
         try {
+            console.log('添加用户食材:', ingredients);
             const result = await this.request('/user/ingredients', {
                 method: 'POST',
                 body: JSON.stringify({ ingredients })
@@ -274,6 +275,7 @@ class APIUtils {
                 reader.readAsDataURL(audioBlob);
             });
             
+            console.log('发送的语音识别参数: rate=8000, format=wav');
             // 发送请求到后端代理接口
             const response = await fetch('/api/baidu/asr', {
                 method: 'POST',

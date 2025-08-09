@@ -277,7 +277,8 @@ def baidu_asr_proxy():
         dev_pid = data.get('dev_pid', 1537)
         cuid = data.get('cuid', 'forbites')
         format = data.get('format', 'wav')
-        rate = data.get('rate', 16000)
+        rate = data.get('rate', 8000)
+        app.logger.info(f'接收到的语音识别参数: rate={rate}, format={format}, dev_pid={dev_pid}')
         channel = data.get('channel', 1)
 
         api_url = f'{BAIDU_ASR_SERVER_URL}?dev_pid={dev_pid}&cuid={cuid}&token={access_token}'
