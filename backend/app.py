@@ -283,6 +283,38 @@ def baidu_asr_proxy():
 
         api_url = f'{BAIDU_ASR_SERVER_URL}?dev_pid={dev_pid}&cuid={cuid}&token={access_token}'
 
+        # 验证音频长度
+        min_audio_length = 100  # 最小音频长度（字节）
+        max_audio_length = 10 * 1024 * 1024  # 最大音频长度（10MB）
+        
+        if data['len'] < min_audio_length:
+            error_response = {
+                'err_no': 3314,
+                'err_msg': f'音频长度太短，至少需要{min_audio_length}字节',
+                'sn': '',
+                'debug_info': {
+                    'received_params': f'rate={rate}, format={format}, dev_pid={dev_pid}',
+                    'api_url': api_url,
+                    'audio_length': data['len']
+                }
+            }
+            app.logger.error(f'音频长度太短: {data['len']}字节')
+            return jsonify(error_response)
+        
+        if data['len'] > max_audio_length:
+            error_response = {
+                'err_no': 3314,
+                'err_msg': f'音频长度太长，最大支持{max_audio_length}字节',
+                'sn': '',
+                'debug_info': {
+                    'received_params': f'rate={rate}, format={format}, dev_pid={dev_pid}',
+                    'api_url': api_url,
+                    'audio_length': data['len']
+                }
+            }
+            app.logger.error(f'音频长度太长: {data['len']}字节')
+            return jsonify(error_response)
+        
         # 准备请求体
         request_body = {
             'format': format,

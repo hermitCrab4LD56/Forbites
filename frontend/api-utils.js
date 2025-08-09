@@ -275,7 +275,8 @@ class APIUtils {
                 reader.readAsDataURL(audioBlob);
             });
             
-            console.log('发送的语音识别参数: rate=8000, format=wav');
+            // 打印音频大小信息
+            console.log(`发送的语音识别参数: rate=8000, format=wav, 音频大小=${audioBlob.size}字节`);
             // 发送请求到后端代理接口
             const response = await fetch('/api/baidu/asr', {
                 method: 'POST',
