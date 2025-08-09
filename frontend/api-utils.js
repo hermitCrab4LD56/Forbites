@@ -285,7 +285,7 @@ class APIUtils {
                 },
                 body: JSON.stringify({
                     format: 'pcm',
-                    rate: 8000,
+                    rate: 16000,
                     channel: 1,
                     cuid: 'forbites',
                     speech: audioData,

@@ -490,14 +490,19 @@
                 // 请求麦克风权限，使用更适合语音识别的音频设置
                 const stream = await navigator.mediaDevices.getUserMedia({ 
                     audio: {
-                        sampleRate: 8000,
+                        sampleRate: 16000,
                         channelCount: 1,
                         echoCancellation: true,
                         noiseSuppression: true,
                         autoGainControl: true
                     }
                 });
-                
+
+                // 验证权限状态
+                const audioTrack = stream.getAudioTracks()[0];
+                console.log("麦克风权限状态:", audioTrack.enabled ? "已授权" : "未授权");
+                console.log("媒体流是否活跃:", stream.active ? "是" : "否");
+
                 isListening = true;
                 const statusElement = document.getElementById('voiceStatus');
                 const startButton = document.querySelector('.voice-button.start');
@@ -518,7 +523,16 @@
                 
                 mediaRecorder.onstop = async () => {
                     const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-                    
+
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    // 创建临时下载链接
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = audioUrl;
+                    downloadLink.download = 'recorded-audio.webm';
+                    document.body.appendChild(downloadLink);
+                    downloadLink.click();
+                    document.body.removeChild(downloadLink);
+
                     // 检查音频质量
                     if (audioChunks.length === 0) {
                         const statusElement = document.getElementById('voiceStatus');
@@ -672,7 +686,7 @@
             try {
                 // 创建AudioContext，使用8kHz采样率以匹配百度API要求
                 const audioContext = new (window.AudioContext || window.webkitAudioContext)({
-                    sampleRate: 8000
+                    sampleRate: 16000
                 });
                 
                 // 读取音频数据
@@ -684,8 +698,8 @@
                 
                 // 如果采样率不是8kHz，需要重采样以匹配百度API要求
                 let processedData = channelData;
-                if (audioBuffer.sampleRate !== 8000) {
-                    const ratio = 8000 / audioBuffer.sampleRate;
+                if (audioBuffer.sampleRate !== 16000) {
+                    const ratio = 16000 / audioBuffer.sampleRate;
                     const newLength = Math.round(channelData.length * ratio);
                     processedData = new Float32Array(newLength);
                     
