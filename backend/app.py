@@ -102,7 +102,7 @@ def get_baidu_access_token():
         app.logger.error(f"获取百度访问令牌失败: {e}")
         raise Exception(f"获取访问令牌失败: {str(e)}")
 
-def baidu_speech_recognition(audio_data, sample_rate=8000):
+def baidu_speech_recognition(audio_data, sample_rate):
     """
     使用百度语音识别API识别音频
     audio_data: 音频二进制数据
@@ -265,100 +265,35 @@ def baidu_asr_proxy():
     try:
         # 获取请求参数
         data = request.get_json()
-        if not data or 'speech' not in data or 'len' not in data:
-            return jsonify({'error': '缺少必要参数'}), 400
+        # 新增：获取前端传递的采样率
+        sample_rate = data.get('rate', 16000)  # 默认为16000
 
-        # 获取百度AccessToken
-        access_token = get_baidu_access_token()
-        if not access_token:
-            return jsonify({'error': '获取百度AccessToken失败'}), 500
-
-        # 构建百度语音识别API请求
-        dev_pid = data.get('dev_pid', 1537)
-        cuid = data.get('cuid', 'forbites')
-        format = data.get('format', 'wav')
-        rate = data.get('rate', 8000)
-        app.logger.info(f'接收到的语音识别参数: rate={rate}, format={format}, dev_pid={dev_pid}')
-        channel = data.get('channel', 1)
-
-        api_url = f'{BAIDU_ASR_SERVER_URL}?dev_pid={dev_pid}&cuid={cuid}&token={access_token}'
-
-        # 验证采样率
-        supported_rates = [8000, 16000]  # 百度API支持的采样率
-        if rate not in supported_rates:
-            error_response = {
-                'err_no': 3311,
-                'err_msg': f'无效的采样率，支持的采样率: {supported_rates}',
-                'sn': '',
-                'debug_info': {
-                    'received_params': f'rate={rate}, format={format}, dev_pid={dev_pid}',
-                    'api_url': api_url,
-                    'supported_rates': supported_rates
-                }
+        # 解码前端传递的Base64音频数据
+        audio_data = base64.b64decode(data['speech'])
+        
+        # 调用百度语音识别函数，传入正确的采样率
+        recognized_text = baidu_speech_recognition(audio_data, sample_rate)
+        
+        # 构造标准响应格式（包含识别结果和调试信息）
+        response_data = {
+            'text': recognized_text,
+            'debug_info': {
+                'received_params': f'rate={sample_rate}, format=pcm, dev_pid={data.get("dev_pid", 1537)}',
+                'api_url': f'{BAIDU_ASR_URL}?dev_pid={data.get("dev_pid", 1537)}&cuid={data.get("cuid", "forbites")}',
+                'audio_length': len(audio_data)
             }
-            app.logger.error(f'无效的采样率: {rate}，支持的采样率: {supported_rates}')
-            return jsonify(error_response)
-        
-        # 验证音频长度
-        min_audio_length = 100  # 最小音频长度（字节）
-        max_audio_length = 10 * 1024 * 1024  # 最大音频长度（10MB）
-        
-        if data['len'] < min_audio_length:
-            error_response = {
-                'err_no': 3314,
-                'err_msg': f'音频长度太短，至少需要{min_audio_length}字节',
-                'sn': '',
-                'debug_info': {
-                    'received_params': f'rate={rate}, format={format}, dev_pid={dev_pid}',
-                    'api_url': api_url,
-                    'audio_length': data['len']
-                }
-            }
-            app.logger.error(f'音频长度太短: {data['len']}字节')
-            return jsonify(error_response)
-        
-        if data['len'] > max_audio_length:
-            error_response = {
-                'err_no': 3314,
-                'err_msg': f'音频长度太长，最大支持{max_audio_length}字节',
-                'sn': '',
-                'debug_info': {
-                    'received_params': f'rate={rate}, format={format}, dev_pid={dev_pid}',
-                    'api_url': api_url,
-                    'audio_length': data['len']
-                }
-            }
-            app.logger.error(f'音频长度太长: {data['len']}字节')
-            return jsonify(error_response)
-        
-        # 准备请求体
-        request_body = {
-            'format': format,
-            'rate': rate,
-            'channel': channel,
-            'cuid': cuid,
-            'token': access_token,
-            'speech': data['speech'],
-            'len': data['len']
         }
-
-        # 发送请求到百度语音识别API
-        response = requests.post(api_url, json=request_body, headers={'Content-Type': 'application/json'})
-        response_data = response.json()
-
-        # 添加调试信息到响应
-        debug_info = {
-            'received_params': f'rate={rate}, format={format}, dev_pid={dev_pid}',
-            'api_url': api_url,
-            'audio_length': data['len']
-        }
-        response_data['debug_info'] = debug_info
         
-        # 返回百度API的响应
-        return jsonify(response_data)
+        # 返回统一格式的响应
+        return jsonify(response_data), 200
+        
     except Exception as e:
-        app.logger.error(f'百度语音识别代理失败: {str(e)}')
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f"百度语音识别代理错误: {e}")
+        # 错误响应也保持结构一致
+        return jsonify({
+            'error': str(e),
+            'err_no': 3311 if 'rate' in str(e).lower() else None
+        }), 500
 
 # === 配置模块 ===
 @app.route('/api/config/keys', methods=['GET'])
