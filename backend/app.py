@@ -602,35 +602,44 @@ def get_user_ingredients():
 
 @app.route('/api/user/ingredients', methods=['POST'])
 def add_user_ingredients():
-    """添加用户食材"""
-    data = request.get_json()
-    ingredients_list = data.get('ingredients', [])
-    if not ingredients_list:
-        return jsonify({'message': '未提供食材，无需保存'}), 200
+    try:
+        # 获取前端传递的食材数据
+        data = request.get_json()
+        new_ingredients = data.get('ingredients', [])
+        
+        if not isinstance(new_ingredients, list):
+            return jsonify({'error': '食材格式必须为数组'}), 400
+        
+        # 加载现有食材数据
+        existing_ingredients = load_data('user_ingredients')
+        
+        # 去重并合并（假设食材以name为标识，避免重复添加）
+        # 若需要保留数量，可调整逻辑（如累加数量）
+        existing_names = {ing['name'] for ing in existing_ingredients}
+        for ing_name in new_ingredients:
+            if ing_name not in existing_names:
+                # 为新食材生成ID和默认信息（根据实际需求调整结构）
+                new_ing = {
+                    'id': get_next_id('user_ingredients'),
+                    'name': ing_name,
+                    'added_at': datetime.utcnow().isoformat()
+                }
+                existing_ingredients.append(new_ing)
+                existing_names.add(ing_name)
+        
+        # 保存更新后的数据
+        if save_data('user_ingredients', existing_ingredients):
+            return jsonify({
+                'message': '食材添加成功',
+                'ingredients': existing_ingredients
+            }), 200
+        else:
+            return jsonify({'error': '保存食材失败'}), 500
     
-    # 加载现有食材并去重
-    user_ingredients = load_data('user_ingredients')
-    existing_names = {
-        item['name'] for item in user_ingredients
-        if item.get('user_id') == 1
-    }
+    except Exception as e:
+        app.logger.error(f"处理用户食材添加失败: {str(e)}")
+        return jsonify({'error': '服务器内部错误'}), 500
     
-    added_count = 0
-    for name in ingredients_list:
-        if name not in existing_names:
-            new_ingredient = {
-                'id': get_next_id('user_ingredients'),
-                'user_id': 1,
-                'name': name,
-                'added_at': datetime.utcnow().isoformat()
-            }
-            user_ingredients.append(new_ingredient)
-            existing_names.add(name)
-            added_count += 1
-    
-    if added_count > 0 and save_data('user_ingredients', user_ingredients):
-        return jsonify({'message': f'成功添加 {added_count} 种食材'})
-    return jsonify({'error': '无新食材添加或保存失败'}), 500
 
 @app.route('/api/user/ingredients/<int:ingredient_id>', methods=['DELETE'])
 def delete_user_ingredient(ingredient_id):
