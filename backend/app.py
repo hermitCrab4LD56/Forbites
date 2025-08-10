@@ -606,7 +606,7 @@ def add_user_ingredients():
     data = request.get_json()
     ingredients_list = data.get('ingredients', [])
     if not ingredients_list:
-        return jsonify({'error': '食材列表不能为空'}), 400
+        return jsonify({'message': '未提供食材，无需保存'}), 200
     
     # 加载现有食材并去重
     user_ingredients = load_data('user_ingredients')

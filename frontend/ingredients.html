@@ -597,15 +597,19 @@
                     throw new Error(result.error);
                 }
                 
-                // 验证识别结果是否有效
+                // 验证识别结果是否有效（增强校验）
                 if (!result.text || result.text.trim() === '') {
                     throw new Error('未识别到有效内容，请重试');
                 }
-
-                const recognizedText = result.text;
                 
                 // 解析食材和数量
+                const recognizedText = result.text;
                 const parsedIngredients = parseIngredientsFromText(recognizedText);
+                
+                // 新增：检查解析结果是否为空
+                if (parsedIngredients.length === 0) {
+                    throw new Error('未解析到食材，请尝试更清晰的表达（例如："一个苹果"）');
+                }
                 
                 // 显示识别结果
                 resultElement.innerHTML = `
@@ -666,7 +670,7 @@
                 const statusElement = document.getElementById('voiceStatus');
                 const resultElement = document.getElementById('voiceResult');
                 
-                statusElement.textContent = '语音识别失败，请重试';
+                statusElement.textContent = `识别失败: ${error.message}`;
                 statusElement.className = 'voice-status error';
                 
                 resultElement.innerHTML = `
@@ -732,254 +736,273 @@
 
         function parseIngredientsFromText(text) {
             const ingredients = [];
-            const foundIngredients = new Set(); // 用于去重
+            const foundIngredients = new Set();
             
-            // 数字映射
+            // 数字映射保持不变
             const numberMap = {
                 '一': 1, '二': 2, '两': 2, '三': 3, '四': 4, '五': 5,
                 '六': 6, '七': 7, '八': 8, '九': 9, '十': 10,
                 '十一': 11, '十二': 12, '十三': 13, '十四': 14, '十五': 15,
                 '十六': 16, '十七': 17, '十八': 18, '十九': 19, '二十': 20
             };
-            
-            // 食材同义词映射表 - 将同义词统一为标准名称
-            const ingredientSynonyms = {
+
+            // 1. 定义「同义词→标准名」的特殊映射（key≠value的情况）
+            const specialSynonyms = {
                 '西红柿': '番茄',
-                '番茄': '番茄',
-                '黄瓜': '黄瓜',
-                '土豆': '土豆',
                 '马铃薯': '土豆',
-                '胡萝卜': '胡萝卜',
-                '洋葱': '洋葱',
-                '大蒜': '大蒜',
                 '蒜': '大蒜',
-                '姜': '姜',
                 '生姜': '姜',
-                '葱': '葱',
-                '大葱': '葱',
-                '白菜': '白菜',
-                '菠菜': '菠菜',
-                '芹菜': '芹菜',
-                '韭菜': '韭菜',
-                '香菜': '香菜',
-                '辣椒': '辣椒',
-                '茄子': '茄子',
-                '南瓜': '南瓜',
-                '冬瓜': '冬瓜',
-                '豆腐': '豆腐',
-                '豆芽': '豆芽',
-                '豆干': '豆干',
-                '腐竹': '腐竹',
-                '粉丝': '粉丝',
-                '面条': '面条',
-                '米饭': '米饭',
-                '馒头': '馒头',
-                '包子': '包子',
-                '鸡蛋': '鸡蛋',
-                '鸭蛋': '鸭蛋',
-                '鹌鹑蛋': '鹌鹑蛋',
-                '鸡肉': '鸡肉',
-                '猪肉': '猪肉',
-                '牛肉': '牛肉',
-                '羊肉': '羊肉',
-                '鱼肉': '鱼肉',
-                '虾': '虾',
-                '生抽': '生抽',
-                '老抽': '老抽',
-                '蚝油': '蚝油',
-                '醋': '醋',
-                '盐': '盐',
-                '糖': '糖',
-                '味精': '味精',
-                '鸡精': '鸡精',
-                '胡椒粉': '胡椒粉',
-                '花椒': '花椒',
-                '八角': '八角',
-                '桂皮': '桂皮',
-                '香叶': '香叶',
-                '孜然': '孜然',
-                '芝麻': '芝麻',
-                '花生': '花生',
-                '核桃': '核桃',
-                '杏仁': '杏仁'
+                '大葱': '葱'
+                // 其他key≠value的映射继续添加在这里
             };
+
+            // 2. 定义「标准名→标准名」的基础食材数组（key=value的情况，无需重复写键值对）
+            const standardIngredients = [
+                // 蔬菜类
+                '黄瓜', '胡萝卜', '洋葱', '白菜', '菠菜', '芹菜', '韭菜', '香菜',
+                '辣椒', '茄子', '南瓜', '冬瓜', '豆腐', '豆芽', '豆干', '腐竹',
+                '粉丝', '面条',
+                // 主食类
+                '米饭', '馒头', '包子',
+                // 蛋肉类
+                '鸡蛋', '鸭蛋', '鹌鹑蛋', '鸡肉', '猪肉', '牛肉', '羊肉', '鱼肉', '虾',
+                // 调料类
+                '生抽', '老抽', '蚝油', '醋', '盐', '糖', '味精', '鸡精', '胡椒粉',
+                '花椒', '八角', '桂皮', '香叶', '孜然', '芝麻', '花生', '核桃', '杏仁'
+                // 新增食材只需添加到数组中，无需写key:value
+            ];
+
+            // 3. 动态生成「标准名→标准名」的映射对象
+            const standardSynonyms = standardIngredients.reduce((obj, ingredient) => {
+                obj[ingredient] = ingredient; // key和value相同
+                return obj;
+            }, {});
+
+            // 4. 合并两类映射，得到最终的ingredientSynonyms
+            const ingredientSynonyms = {
+                ...specialSynonyms,  // 展开特殊映射
+                ...standardSynonyms  // 展开标准名映射
+            };
+         
+            // // 补充食材同义词（关键：添加苹果等常见食材）
+            // const ingredientSynonyms = {
+            //     '西红柿': '番茄',
+            //     '番茄': '番茄',
+            //     '黄瓜': '黄瓜',
+            //     '土豆': '土豆',
+            //     '马铃薯': '土豆',
+            //     '胡萝卜': '胡萝卜',
+            //     '洋葱': '洋葱',
+            //     '大蒜': '大蒜',
+            //     '蒜': '大蒜',
+            //     '姜': '姜',
+            //     '生姜': '姜',
+            //     '葱': '葱',
+            //     '大葱': '葱',
+            //     '白菜': '白菜',
+            //     '菠菜': '菠菜',
+            //     '芹菜': '芹菜',
+            //     '韭菜': '韭菜',
+            //     '香菜': '香菜',
+            //     '辣椒': '辣椒',
+            //     '茄子': '茄子',
+            //     '南瓜': '南瓜',
+            //     '冬瓜': '冬瓜',
+            //     '豆腐': '豆腐',
+            //     '豆芽': '豆芽',
+            //     '豆干': '豆干',
+            //     '腐竹': '腐竹',
+            //     '粉丝': '粉丝',
+            //     '面条': '面条',
+            //     '米饭': '米饭',
+            //     '馒头': '馒头',
+            //     '包子': '包子',
+            //     '鸡蛋': '鸡蛋',
+            //     '鸭蛋': '鸭蛋',
+            //     '鹌鹑蛋': '鹌鹑蛋',
+            //     '鸡肉': '鸡肉',
+            //     '猪肉': '猪肉',
+            //     '牛肉': '牛肉',
+            //     '羊肉': '羊肉',
+            //     '鱼肉': '鱼肉',
+            //     '虾': '虾',
+            //     '生抽': '生抽',
+            //     '老抽': '老抽',
+            //     '蚝油': '蚝油',
+            //     '醋': '醋',
+            //     '盐': '盐',
+            //     '糖': '糖',
+            //     '味精': '味精',
+            //     '鸡精': '鸡精',
+            //     '胡椒粉': '胡椒粉',
+            //     '花椒': '花椒',
+            //     '八角': '八角',
+            //     '桂皮': '桂皮',
+            //     '香叶': '香叶',
+            //     '孜然': '孜然',
+            //     '芝麻': '芝麻',
+            //     '花生': '花生',
+            //     '核桃': '核桃',
+            //     '杏仁': '杏仁',
+            //     '苹果': '苹果',       // 新增
+            //     '香蕉': '香蕉',       // 新增
+            //     '面条': '面条'        // 新增
+            // };
             
             // 常见食材关键词（使用标准名称）
             const ingredientKeywords = Object.values(ingredientSynonyms);
             
-            // 先用逗号（中英文）、顿号、句号、分号等分割句子，提升多食材识别率
-            const segments = text.split(/[，,、。；;\n]/);
+            // 优化分割逻辑：保留标点前的有效内容
+            const segments = text.split(/[，,、。；;\n]/).filter(seg => seg.trim() !== '');
             
-            // 匹配模式：数字 + 单位 + 食材
+            // 增强正则表达式：支持单数量（一个）、带标点场景
             const patterns = [
-                // 匹配 "三个西红柿" 这种格式
+                // 匹配 "一个苹果" （核心修复：支持单个数字+单位+食材）
+                new RegExp(`([一二三四五六七八九十两])\\s*个\\s*([^，。！？、,;；\s]+)`),
+                // 保留原有其他模式...
                 new RegExp(`([一二三四五六七八九十两]+个|\\d+个)([^，。！？、,;；\s]+)`),
-                // 匹配 "三个 西红柿" 这种格式（带空格）
                 new RegExp(`([一二三四五六七八九十两]+个|\\d+个)\\s*([^，。！？、,;；\s]+)`),
-                // 匹配 "三 个 西红柿" 这种格式（分开）
-                new RegExp(`([一二三四五六七八九十两]+)\\s*个\\s*([^，。！？、,;；\s]+)`),
-                // 匹配 "3个西红柿" 这种格式
                 new RegExp(`(\\d+)\\s*个\\s*([^，。！？、,;；\s]+)`),
-                // 匹配 "两包面条" 这种格式
                 new RegExp(`([一二三四五六七八九十两]+包|\\d+包)([^，。！？、,;；\s]+)`),
-                // 匹配 "两包 面条" 这种格式（带空格）
-                new RegExp(`([一二三四五六七八九十两]+包|\\d+包)\\s*([^，。！？、,;；\s]+)`),
-                // 匹配 "两 包 面条" 这种格式（分开）
                 new RegExp(`([一二三四五六七八九十两]+)\\s*包\\s*([^，。！？、,;；\s]+)`),
-                // 匹配 "2包面条" 这种格式
-                new RegExp(`(\\d+)\\s*包\\s*([^，。！？、,;；\s]+)`),
-                // 匹配 "两根黄瓜" 这种格式
-                new RegExp(`([一二三四五六七八九十两]+根|\\d+根)([^，。！？、,;；\s]+)`),
-                // 匹配 "两根 黄瓜" 这种格式（带空格）
+                // 补充其他单位模式（根、瓶等）
                 new RegExp(`([一二三四五六七八九十两]+根|\\d+根)\\s*([^，。！？、,;；\s]+)`),
-                // 匹配 "两 根 黄瓜" 这种格式（分开）
-                new RegExp(`([一二三四五六七八九十两]+)\\s*根\\s*([^，。！？、,;；\s]+)`),
-                // 匹配 "2根黄瓜" 这种格式
-                new RegExp(`(\\d+)\\s*根\\s*([^，。！？、,;；\s]+)`),
-                // 匹配 "三 西红柿" 这种格式（省略单位）
-                new RegExp(`([一二三四五六七八九十]+)\\s+([^，。！？、,;；\s]+)`),
-                // 匹配 "3 西红柿" 这种格式（省略单位）
-                new RegExp(`(\\d+)\\s+([^，。！？、,;；\s]+)`)
+                new RegExp(`([一二三四五六七八九十两]+瓶|\\d+瓶)\\s*([^，。！？、,;；\s]+)`),
             ];
             
-            // 逐段匹配，提升多食材识别率
+            // 解析每个片段
             segments.forEach(segment => {
                 let matched = false;
-                for (const pattern of patterns) {
-                    const match = pattern.exec(segment.trim());
-                    if (match) {
+                patterns.forEach(pattern => {
+                    if (matched) return; // 已匹配则跳过其他模式
+                    const match = segment.match(pattern);
+                    if (match && match[1] && match[2]) {
                         matched = true;
-                        const quantityPart = match[1];
-                        const ingredient = match[2];
-                        let num = 1;
-                        let unit = '个';
-                        if (numberMap[quantityPart]) {
-                            num = numberMap[quantityPart];
-                        } else if (quantityPart.includes('个')) {
-                            const numStr = quantityPart.replace('个', '');
-                            num = numberMap[numStr] || parseInt(numStr) || 1;
-                            unit = '个';
-                        } else if (quantityPart.includes('包')) {
-                            const numStr = quantityPart.replace('包', '');
-                            num = numberMap[numStr] || parseInt(numStr) || 1;
-                            unit = '包';
-                        } else if (quantityPart.includes('根')) {
-                            const numStr = quantityPart.replace('根', '');
-                            num = numberMap[numStr] || parseInt(numStr) || 1;
-                            unit = '根';
-                        } else {
-                            num = numberMap[quantityPart] || parseInt(quantityPart) || 1;
-                            unit = '个';
-                        }
-                        if (isNaN(num)) num = 1;
+                        const quantityText = match[1].trim();
+                        let name = match[2].trim();
+                        
                         // 标准化食材名称
-                        let normalizedIngredient = ingredient;
-                        for (const [synonym, standardName] of Object.entries(ingredientSynonyms)) {
-                            if (ingredient.includes(synonym) || synonym.includes(ingredient)) {
-                                normalizedIngredient = standardName;
-                                break;
-                            }
+                        const normalizedName = ingredientSynonyms[name] || name; // 支持未在映射表中的食材
+                        
+                        // 解析数量
+                        let quantityNum = 1;
+                        if (numberMap[quantityText]) {
+                            quantityNum = numberMap[quantityText];
+                        } else if (!isNaN(parseInt(quantityText))) {
+                            quantityNum = parseInt(quantityText);
                         }
-                        if (ingredientKeywords.includes(normalizedIngredient) && !foundIngredients.has(normalizedIngredient)) {
+                        
+                        // 去重添加
+                        if (!foundIngredients.has(normalizedName)) {
+                            foundIngredients.add(normalizedName);
                             ingredients.push({
-                                name: normalizedIngredient,
-                                quantity: `${num}${unit}`
+                                name: normalizedName,
+                                quantity: `${quantityNum}个` // 默认单位，可根据匹配的单位动态调整
                             });
-                            foundIngredients.add(normalizedIngredient);
                         }
-                        break; // 当前段只取第一个匹配，防止重复
                     }
-                }
-                // 如果没有匹配到数量，尝试匹配单独的食材名称（不break，全部遍历）
-                if (!matched) {
-                    for (const [synonym, standardName] of Object.entries(ingredientSynonyms)) {
-                        if (segment.includes(synonym) && !foundIngredients.has(standardName)) {
-                            ingredients.push({
-                                name: standardName,
-                                quantity: '1个'
-                            });
-                            foundIngredients.add(standardName);
-                        }
+                });
+                
+                // 兜底逻辑：如果没有匹配到数量，默认1个（例如“苹果”）
+                if (!matched && segment.trim()) {
+                    const name = segment.trim();
+                    const normalizedName = ingredientSynonyms[name] || name;
+                    if (!foundIngredients.has(normalizedName)) {
+                        foundIngredients.add(normalizedName);
+                        ingredients.push({
+                            name: normalizedName,
+                            quantity: '1个'
+                        });
                     }
                 }
             });
+            
             return ingredients;
         }
-
-        // 标准化食材名称函数
+        
+        // 标准化食材名称函数（无需修改，直接使用合并后的ingredientSynonyms）
         function normalizeIngredientName(ingredientName) {
-            // 食材同义词映射表 - 将同义词统一为标准名称
-            const ingredientSynonyms = {
-                '西红柿': '番茄',
-                '番茄': '番茄',
-                '黄瓜': '黄瓜',
-                '土豆': '土豆',
-                '马铃薯': '土豆',
-                '胡萝卜': '胡萝卜',
-                '洋葱': '洋葱',
-                '大蒜': '大蒜',
-                '蒜': '大蒜',
-                '姜': '姜',
-                '生姜': '姜',
-                '葱': '葱',
-                '大葱': '葱',
-                '白菜': '白菜',
-                '菠菜': '菠菜',
-                '芹菜': '芹菜',
-                '韭菜': '韭菜',
-                '香菜': '香菜',
-                '辣椒': '辣椒',
-                '茄子': '茄子',
-                '南瓜': '南瓜',
-                '冬瓜': '冬瓜',
-                '豆腐': '豆腐',
-                '豆芽': '豆芽',
-                '豆干': '豆干',
-                '腐竹': '腐竹',
-                '粉丝': '粉丝',
-                '面条': '面条',
-                '米饭': '米饭',
-                '馒头': '馒头',
-                '包子': '包子',
-                '鸡蛋': '鸡蛋',
-                '鸭蛋': '鸭蛋',
-                '鹌鹑蛋': '鹌鹑蛋',
-                '鸡肉': '鸡肉',
-                '猪肉': '猪肉',
-                '牛肉': '牛肉',
-                '羊肉': '羊肉',
-                '鱼肉': '鱼肉',
-                '虾': '虾',
-                '生抽': '生抽',
-                '老抽': '老抽',
-                '蚝油': '蚝油',
-                '醋': '醋',
-                '盐': '盐',
-                '糖': '糖',
-                '味精': '味精',
-                '鸡精': '鸡精',
-                '胡椒粉': '胡椒粉',
-                '花椒': '花椒',
-                '八角': '八角',
-                '桂皮': '桂皮',
-                '香叶': '香叶',
-                '孜然': '孜然',
-                '芝麻': '芝麻',
-                '花生': '花生',
-                '核桃': '核桃',
-                '杏仁': '杏仁'
-            };
-            
-            // 查找同义词映射
             for (const [synonym, standardName] of Object.entries(ingredientSynonyms)) {
                 if (ingredientName === synonym || ingredientName.includes(synonym) || synonym.includes(ingredientName)) {
                     return standardName;
                 }
             }
-            
-            // 如果没有找到映射，返回原名称
-            return ingredientName;
+            return ingredientName; // 未匹配到则返回原名称
         }
+        // // 标准化食材名称函数
+        // function normalizeIngredientName(ingredientName) {
+        //     // 食材同义词映射表 - 将同义词统一为标准名称
+        //     const ingredientSynonyms = {
+        //         '西红柿': '番茄',
+        //         '番茄': '番茄',
+        //         '黄瓜': '黄瓜',
+        //         '土豆': '土豆',
+        //         '马铃薯': '土豆',
+        //         '胡萝卜': '胡萝卜',
+        //         '洋葱': '洋葱',
+        //         '大蒜': '大蒜',
+        //         '蒜': '大蒜',
+        //         '姜': '姜',
+        //         '生姜': '姜',
+        //         '葱': '葱',
+        //         '大葱': '葱',
+        //         '白菜': '白菜',
+        //         '菠菜': '菠菜',
+        //         '芹菜': '芹菜',
+        //         '韭菜': '韭菜',
+        //         '香菜': '香菜',
+        //         '辣椒': '辣椒',
+        //         '茄子': '茄子',
+        //         '南瓜': '南瓜',
+        //         '冬瓜': '冬瓜',
+        //         '豆腐': '豆腐',
+        //         '豆芽': '豆芽',
+        //         '豆干': '豆干',
+        //         '腐竹': '腐竹',
+        //         '粉丝': '粉丝',
+        //         '面条': '面条',
+        //         '米饭': '米饭',
+        //         '馒头': '馒头',
+        //         '包子': '包子',
+        //         '鸡蛋': '鸡蛋',
+        //         '鸭蛋': '鸭蛋',
+        //         '鹌鹑蛋': '鹌鹑蛋',
+        //         '鸡肉': '鸡肉',
+        //         '猪肉': '猪肉',
+        //         '牛肉': '牛肉',
+        //         '羊肉': '羊肉',
+        //         '鱼肉': '鱼肉',
+        //         '虾': '虾',
+        //         '生抽': '生抽',
+        //         '老抽': '老抽',
+        //         '蚝油': '蚝油',
+        //         '醋': '醋',
+        //         '盐': '盐',
+        //         '糖': '糖',
+        //         '味精': '味精',
+        //         '鸡精': '鸡精',
+        //         '胡椒粉': '胡椒粉',
+        //         '花椒': '花椒',
+        //         '八角': '八角',
+        //         '桂皮': '桂皮',
+        //         '香叶': '香叶',
+        //         '孜然': '孜然',
+        //         '芝麻': '芝麻',
+        //         '花生': '花生',
+        //         '核桃': '核桃',
+        //         '杏仁': '杏仁'
+        //     };
+            
+            // // 查找同义词映射
+            // for (const [synonym, standardName] of Object.entries(ingredientSynonyms)) {
+            //     if (ingredientName === synonym || ingredientName.includes(synonym) || synonym.includes(ingredientName)) {
+            //         return standardName;
+            //     }
+            // }
+            
+        //     // 如果没有找到映射，返回原名称
+        //     return ingredientName;
+        // }
 
         // 测试函数：验证同义词映射
         function testIngredientSynonyms() {
